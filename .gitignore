@@ -1,0 +1,19 @@
+# Backend - Ignorer node_modules et .env
+backend/node_modules/
+backend/.env
+
+# Frontend - Ignorer node_modules et .env
+frontend/node_modules/
+frontend/.env
+
+# Fichiers temporaires ou spécifiques à l'OS
+.DS_Store
+*.log
+
+# Ignorer les fichiers de build du frontend (si vous utilisez Vite ou un autre bundler)
+frontend/dist/
+frontend/build/
+
+# Ignorer les fichiers de configuration d'IDE (optionnel)
+.vscode/
+.idea/
