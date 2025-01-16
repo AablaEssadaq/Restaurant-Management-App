@@ -4,13 +4,14 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import { connectDb } from './database/connect.js';
 import registerRouter from './routes/register.js';
+import loginRouter from './routes/login.js';
 dotenv.config();
 
 const app = express()
 const port = process.env.PORT || 8081;
 
 app.use(express.json())
-app.use('/api',registerRouter)
+app.use('/api',[registerRouter,loginRouter])
 
 
 // Définir la configuration de Swagger
