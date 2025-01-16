@@ -1,8 +1,9 @@
 import { hash } from 'bcrypt';
 import Owner from '../database/models/Owner.js';
-import restaurantModel from '../database/models/Restaurant.js';
+import Restaurant from '../database/models/Restaurant.js';
+import User from '../database/models/User.js';
 
-export const createOwner = async (req, res) => {
+export const createOwnerAccount = async (req, res) => {
   try {
     const { firstName, lastName, phoneNumber, country, city, email, password, confirmPassword } = req.body;
     const {restaurantName, restaurantCountry, restaurantCity, restaurantStreet} = req.body
@@ -11,14 +12,20 @@ export const createOwner = async (req, res) => {
       return res.status(400).json({ message: "les 2 mots de passes de sont pas compatibles !" });
     }
 
-    const existingOwner = await Owner.findOne({ email });
-    if (existingOwner) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res.status(400).json({ message: "Email déja utilisé." });
     }
 
     const hashedPassword = await hash(password, 10);
 
    
+    const newUser = await User.create({
+      email,
+      password: hashedPassword,
+      role:"owner",
+    });
+
     // Création de l'objet Owner
     const newOwner = await Owner.create({
       firstName,
@@ -29,11 +36,10 @@ export const createOwner = async (req, res) => {
         city,
       },
       email,
-      password: hashedPassword,
-      role:"Owner",
+      user_id: newUser._id,
     });
 
-    const newRestaurant = await restaurantModel.create({
+    const newRestaurant = await Restaurant.create({
         name:restaurantName,
         address: { 
             country: restaurantCountry,
@@ -45,7 +51,8 @@ export const createOwner = async (req, res) => {
 
 
     res.status(201).json({
-      message: "Owner created successfully",
+      message: "Account created successfully",
+      user: newUser,
       owner: newOwner,
       restaurant:newRestaurant
     });
@@ -61,4 +68,4 @@ export const createOwner = async (req, res) => {
 
 };
 
-export default createOwner;
+export default createOwnerAccount;

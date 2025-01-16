@@ -13,6 +13,6 @@ const restaurantSchema = new mongoose.Schema({
   updated_at: { type: Date, default: Date.now },
 });
 
-export const restaurantModel= mongoose.model('Restaurant', restaurantSchema);
+export const Restaurant= mongoose.model('Restaurant', restaurantSchema);
 
-export default restaurantModel;
+export default Restaurant;
