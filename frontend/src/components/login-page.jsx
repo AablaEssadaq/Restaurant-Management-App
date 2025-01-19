@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+
 import loginImg from '../assets/undraw_login_wqkt.svg';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -18,6 +19,7 @@ import {
     CardContent,
     CardFooter,
   } from "@/components/ui/card"
+import { useNavigate } from 'react-router-dom';
  
 
 const formSchema = z.object({
@@ -26,6 +28,8 @@ const formSchema = z.object({
 })
 
 const LoginPage = () => {
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         document.body.className = "h-screen flex justify-center items-center bg-beige text-foreground"; // Ajoute une classe au body en l'accèdant via le DOM, pas directement
@@ -46,6 +50,7 @@ const LoginPage = () => {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
         console.log(values)
+        navigate('/dashboard')
       }
       const [showPassword, setShowPassword] = useState(false);
 

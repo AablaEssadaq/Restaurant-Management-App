@@ -10,6 +10,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ProgressSteps } from './progress-steps'
+import { useNavigate } from 'react-router-dom'
+
 
 const formSchema = z.object({
   // Personal Information
@@ -42,7 +44,13 @@ const steps = [
 ]
 
 export function MultiStepForm() {
+
   const [step, setStep] = useState(0)
+
+   const [showPassword, setShowPassword] = useState(false);
+   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const navigate = useNavigate();
   
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -69,6 +77,8 @@ export function MultiStepForm() {
     } else {
       console.log('Form submitted:', data)
       // Handle final form submission here
+      
+      navigate('/postRegister');
     }
   }
 
@@ -275,31 +285,63 @@ export function MultiStepForm() {
                   )}
                 />
                 <FormField
-                  control={form.control}
-                  name="motDePasse"
-                  render={({ field }) => (
-                    <FormItem className="w-1/2">
-                      <FormLabel>Mot de passe</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="password" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                control={form.control}
+                name="motDePasse"
+                render={({ field }) => (
+                <FormItem className="w-1/2">
+                  <FormLabel>Mot de passe</FormLabel>
+                  <FormControl>
+                  <div className="relative">
+                  <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  className="pr-10"
+                  {...field}
+                  />
+                  <Button
+                  type="button"
+                  variant="ghost"
+                  siz
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                 onClick={() => setShowPassword(!showPassword)}
+                  >
+                  {showPassword ? <i class="fa-regular fa-eye-slash fa-lg"></i> : <i class="fa-regular fa-eye fa-lg"></i> }
+                 </Button>
+                  </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
                 <FormField
-                  control={form.control}
-                  name="confirmerMotDePasse"
-                  render={({ field }) => (
-                    <FormItem className="w-1/2">
-                      <FormLabel>Confirmer le mot de passe</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="password" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                control={form.control}
+                name="confirmerMotDePasse"
+                render={({ field }) => (
+                <FormItem className="w-1/2">
+                  <FormLabel> Confirmer le mot de passe</FormLabel>
+                  <FormControl>
+                  <div className="relative">
+                  <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  className="pr-10"
+                  {...field}
+                  />
+                  <Button
+                  type="button"
+                  variant="ghost"
+                  siz
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                  {showConfirmPassword ? <i class="fa-regular fa-eye-slash fa-lg"></i> : <i class="fa-regular fa-eye fa-lg"></i> }
+                 </Button>
+                  </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
                 </div>
               </>
             )}
