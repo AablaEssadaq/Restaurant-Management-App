@@ -32,6 +32,7 @@ module.exports = {
   			},
 			beige: '#FFF1E4',
 			burgundy: '#790117',
+			"burgundy-hover":'#3f010c',
 			yellow: '#F7B336',
 			orange: '#DB7C24',
   			muted: {

@@ -65,7 +65,9 @@
   }
 }
 
+
 body {
-  @apply h-screen flex justify-center items-center bg-beige text-foreground;
+  @apply bg-beige;
 }
+
 
