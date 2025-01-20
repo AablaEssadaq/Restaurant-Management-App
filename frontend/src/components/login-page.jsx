@@ -20,6 +20,7 @@ import {
     CardFooter,
   } from "@/components/ui/card"
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
  
 
 const formSchema = z.object({
@@ -46,12 +47,26 @@ const LoginPage = () => {
         },
       })
 
-    function onSubmit(values) {
+    const  onSubmit = async(values) =>  {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
-        console.log(values)
-        navigate('/dashboard')
+        console.log('Form submitted successfully:', values);
+
+        try {
+          const response = await axios.post('http://localhost:3000/api/login', values);
+          // Handle successful response
+          if (response.data.accessToken) {
+          // Navigate to the dashboard page 
+          navigate('/dashboard');
+         }
+          
+        } catch (error) {
+          // Handle errors (e.g., validation errors, network issues)
+          console.error('Error submitting form:', error.response?.data || error.message);
+          alert(`Une erreur s\'est produite lors de la soumission du formulaire : ${error.response?.data?.message}`);
+        }
       }
+
       const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -99,7 +114,7 @@ const LoginPage = () => {
              className="absolute right-2 top-1/2 transform -translate-y-1/2"
              onClick={() => setShowPassword(!showPassword)}
               >
-              {showPassword ? <i class="fa-regular fa-eye-slash fa-lg"></i> : <i class="fa-regular fa-eye fa-lg"></i> }
+              {showPassword ? <i className="fa-regular fa-eye-slash fa-lg"></i> : <i className="fa-regular fa-eye fa-lg"></i> }
              </Button>
               </div>
               </FormControl>

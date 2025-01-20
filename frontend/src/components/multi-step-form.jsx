@@ -11,30 +11,31 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ProgressSteps } from './progress-steps'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 
 const formSchema = z.object({
   // Personal Information
-  nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-  prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
-  telephone: z.string().min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
-  pays: z.string().min(2, "Veuillez sélectionner un pays"),
-  ville: z.string().min(2, "La ville doit contenir au moins 2 caractères"),
+  lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+  firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
+  phoneNumber: z.string().min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
+  country: z.string().min(2, "Veuillez sélectionner un pays"),
+  city: z.string().min(2, "La ville doit contenir au moins 2 caractères"),
   
   // Restaurant Information
-  nomRestaurant: z.string().min(2, "Le nom du restaurant doit contenir au moins 2 caractères"),
-  logo: z.string(),
-  restaurantPays: z.string().min(2, "Veuillez sélectionner un pays"),
-  restaurantVille: z.string().min(2, "La ville doit contenir au moins 2 caractères"),
-  adresse: z.string().min(5, "L'adresse doit contenir au moins 5 caractères"),
+  restaurantName: z.string().min(2, "Le nom du restaurant doit contenir au moins 2 caractères"),
+ // logo: z.string(),
+  restaurantCountry: z.string().min(2, "Veuillez sélectionner un pays"),
+  restaurantCity: z.string().min(2, "La ville doit contenir au moins 2 caractères"),
+  restaurantStreet: z.string().min(5, "L'adresse doit contenir au moins 5 caractères"),
   
   // Credentials
   email: z.string().email("Veuillez entrer une adresse email valide"),
-  motDePasse: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
-  confirmerMotDePasse: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères")
-}).refine((data) => data.motDePasse === data.confirmerMotDePasse, {
+  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
+  confirmPassword: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères")
+}).refine((data) => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas",
-  path: ["confirmerMotDePasse"],
+  path: ["confirmPassword"],
 })
 
 const steps = [
@@ -55,19 +56,19 @@ export function MultiStepForm() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      nom: '',
-      prenom: '',
-      telephone: '',
-      pays: '',
-      ville: '',
-      nomRestaurant: '',
-      logo: '',
-      restaurantPays: '',
-      restaurantVille: '',
-      adresse: '',
+      lastName: '',
+      firstName: '',
+      phoneNumber: '',
+      country: '',
+      city: '',
+      restaurantName: '',
+    //  logo: '',
+      restaurantCountry: '',
+      restaurantCity: '',
+      restaurantStreet: '',
       email: '',
-      motDePasse: '',
-      confirmerMotDePasse: ''
+      password: '',
+      confirmPassword: ''
     }
   })
 
@@ -76,9 +77,21 @@ export function MultiStepForm() {
       setStep(step + 1)
     } else {
       console.log('Form submitted:', data)
-      // Handle final form submission here
+      try {
+        // Replace 'http://your-backend-api.com/register' with your backend endpoint
+        const response = await axios.post('http://localhost:3000/api/register', data);
+  
+        // Handle successful response
+        console.log('Form submitted successfully:', response.data);
+  
+        // Navigate to the post-registration page or show a success message
+        navigate('/postRegister');
+      } catch (error) {
+        // Handle errors (e.g., validation errors, network issues)
+        console.error('Error submitting form:', error.response?.data || error.message);
+        alert('Une erreur s\'est produite lors de la soumission du formulaire.');
+      }
       
-      navigate('/postRegister');
     }
   }
 
@@ -110,7 +123,7 @@ export function MultiStepForm() {
               <div className='grid grid-cols-2 gap-4'>
               <FormField
                   control={form.control}
-                  name="nom"
+                  name="lastName"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Nom</FormLabel>
@@ -123,7 +136,7 @@ export function MultiStepForm() {
                 />
                 <FormField
                   control={form.control}
-                  name="prenom"
+                  name="firstName"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Prénom</FormLabel>
@@ -136,7 +149,7 @@ export function MultiStepForm() {
                 />
                   <FormField
                     control={form.control}
-                    name="pays"
+                    name="country"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Pays</FormLabel>
@@ -158,7 +171,7 @@ export function MultiStepForm() {
                   />
                   <FormField
                     control={form.control}
-                    name="ville"
+                    name="city"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Ville</FormLabel>
@@ -171,7 +184,7 @@ export function MultiStepForm() {
                   />
                 <FormField
                   control={form.control}
-                  name="telephone"
+                  name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Téléphone</FormLabel>
@@ -192,7 +205,7 @@ export function MultiStepForm() {
               <div className='grid grid-cols-2 gap-4'>
                 <FormField
                   control={form.control}
-                  name="nomRestaurant"
+                  name="restaurantName"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Nom du restaurant</FormLabel>
@@ -203,6 +216,7 @@ export function MultiStepForm() {
                     </FormItem>
                   )}
                 />
+                {/* 
                 <FormField
                   control={form.control}
                   name="logo"
@@ -215,10 +229,10 @@ export function MultiStepForm() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />*/}
                   <FormField
                     control={form.control}
-                    name="restaurantPays"
+                    name="restaurantCountry"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Pays</FormLabel>
@@ -240,7 +254,7 @@ export function MultiStepForm() {
                   />
                   <FormField
                     control={form.control}
-                    name="restaurantVille"
+                    name="restaurantCity"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Ville</FormLabel>
@@ -253,7 +267,7 @@ export function MultiStepForm() {
                   />
                 <FormField
                   control={form.control}
-                  name="adresse"
+                  name="restaurantStreet"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Adresse</FormLabel>
@@ -286,7 +300,7 @@ export function MultiStepForm() {
                 />
                 <FormField
                 control={form.control}
-                name="motDePasse"
+                name="password"
                 render={({ field }) => (
                 <FormItem className="w-1/2">
                   <FormLabel>Mot de passe</FormLabel>
@@ -315,7 +329,7 @@ export function MultiStepForm() {
             />
                 <FormField
                 control={form.control}
-                name="confirmerMotDePasse"
+                name="confirmPassword"
                 render={({ field }) => (
                 <FormItem className="w-1/2">
                   <FormLabel> Confirmer le mot de passe</FormLabel>
