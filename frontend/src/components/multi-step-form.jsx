@@ -11,8 +11,11 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ProgressSteps } from './progress-steps'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { useToast } from "@/hooks/use-toast"
+import axios from 'axios';
 
+
+const apiUrl = import.meta.env.VITE_URL_BASE;
 
 const formSchema = z.object({
   // Personal Information
@@ -48,10 +51,12 @@ export function MultiStepForm() {
 
   const [step, setStep] = useState(0)
 
-   const [showPassword, setShowPassword] = useState(false);
-   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigate = useNavigate();
+
+  const { toast } = useToast()
   
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -79,7 +84,7 @@ export function MultiStepForm() {
       console.log('Form submitted:', data)
       try {
         // Replace 'http://your-backend-api.com/register' with your backend endpoint
-        const response = await axios.post('http://localhost:3000/api/register', data);
+        const response = await axios.post(`${apiUrl}/api/register`, data);
   
         // Handle successful response
         console.log('Form submitted successfully:', response.data);
@@ -89,15 +94,40 @@ export function MultiStepForm() {
       } catch (error) {
         // Handle errors (e.g., validation errors, network issues)
         console.error('Error submitting form:', error.response?.data || error.message);
-        alert('Une erreur s\'est produite lors de la soumission du formulaire.');
+
+       {/* 
+         setAlertMessage(
+          error.response?.data?.message ||
+          "Une erreur s'est produite lors de la soumission du formulaire."
+        );
+        */}
+
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: `${error.response?.data?.message ||
+          "Une erreur s'est produite lors de la soumission du formulaire."}`,
+        })
+       
       }
       
     }
   }
 
+  const fieldsPerStep = [
+    ["firstName", "lastName", "phoneNumber", "country", "city"], // Step 0
+    ["restaurantName", "restaurantCity", "restaurantCountry", "restaurantStreet"], // Step 1
+    ["email", "password", "confirmPassword"] // Step 2
+  ];
+
+  function getCurrentStepFields(step) {
+    return fieldsPerStep[step] || []; // Return fields for the current step or an empty array if the step is out of bounds
+  }
+
   const handleNextStep = async () => {
-    const fields = Object.keys(form.getValues())
-    const currentStepFields = fields.slice(step * 5, (step + 1) * 5)
+    
+    const currentStepFields = getCurrentStepFields(step);
+    console.log(currentStepFields);
     const isStepValid = await form.trigger(currentStepFields)
     
     if (isStepValid) {
@@ -110,6 +140,7 @@ export function MultiStepForm() {
   }
 
   return (
+    <>
     <Card className="relative w-full max-w-2xl mx-auto my-5">
       <CardHeader className="space-y-2 border-b border-border/50 pb-8 pt-6 text-center">
         <CardTitle className="text-2xl font-bold text-[#8B1F41] my-2">Créer votre compte</CardTitle>
@@ -319,7 +350,7 @@ export function MultiStepForm() {
                   className="absolute right-2 top-1/2 transform -translate-y-1/2"
                  onClick={() => setShowPassword(!showPassword)}
                   >
-                  {showPassword ? <i class="fa-regular fa-eye-slash fa-lg"></i> : <i class="fa-regular fa-eye fa-lg"></i> }
+                  {showPassword ? <i className="fa-regular fa-eye-slash fa-lg"></i> : <i className="fa-regular fa-eye fa-lg"></i> }
                  </Button>
                   </div>
                   </FormControl>
@@ -348,7 +379,7 @@ export function MultiStepForm() {
                   className="absolute right-2 top-1/2 transform -translate-y-1/2"
                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
-                  {showConfirmPassword ? <i class="fa-regular fa-eye-slash fa-lg"></i> : <i class="fa-regular fa-eye fa-lg"></i> }
+                  {showConfirmPassword ? <i className="fa-regular fa-eye-slash fa-lg"></i> : <i className="fa-regular fa-eye fa-lg"></i> }
                  </Button>
                   </div>
                   </FormControl>
@@ -381,6 +412,9 @@ export function MultiStepForm() {
         </Form>
       </CardContent>
     </Card>
+    
+    </>
+   
   )
 }
 

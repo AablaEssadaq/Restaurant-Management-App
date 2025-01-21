@@ -6,6 +6,7 @@ import PostRegistrationPage from './components/post-registration'
 import './index.css'
 import '@fortawesome/fontawesome-free/css/all.css';
 import Dashboard from './components/dashboard';
+import { Toaster } from './components/ui/toaster';
 
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
       <Route path="/postRegister" element={<PostRegistrationPage />} />
       <Route path="/dashboard" element={<Dashboard />} />
     </Routes>
-
+    <Toaster />
     </>
   )
 }
