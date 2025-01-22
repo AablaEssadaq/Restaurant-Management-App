@@ -12,6 +12,8 @@ export const userSchema = new mongoose.Schema({
       role:{type:String, required: true, enum: ['owner', 'manager'], default: 'owner'},
       created_at: { type: Date, default: Date.now },
       updated_at: { type: Date, default: Date.now },
+      refreshToken: { type: String }, 
+      refreshTokenExpiresAt: { type: Date }, 
 })
 
 export const User = mongoose.model('User', userSchema);

@@ -6,6 +6,7 @@ import { connectDb } from './database/connect.js';
 import registerRouter from './routes/register.js';
 import loginRouter from './routes/login.js';
 import cors from 'cors'
+import cookieParser from 'cookie-parser';
 dotenv.config();
 
 const app = express()
@@ -13,6 +14,7 @@ const port = process.env.PORT || 8081;
 
 app.use(express.json())
 app.use(cors())
+app.use(cookieParser());
 app.use('/api',[registerRouter,loginRouter])
 
 
