@@ -1,13 +1,14 @@
 import express from 'express'
-import authenticateUser from '../controllers/loginController.js';
+import  { authenticateUser, logoutUser } from '../controllers/authController.js';
 import validateUser from '../middlewares/validateUser.js';
+import verifyToken from '../middlewares/verifyToken.js';
 
-export const loginRouter = express.Router()
+export const authRouter = express.Router()
 
 
 /**
  * @swagger
- * /login:
+ * /auth/login:
  *   post:
  *     summary: Authentifier un utilisateur
  *     description: Connecter un utilisateur et renvoyer des access et refresh tokens.
@@ -39,6 +40,25 @@ export const loginRouter = express.Router()
  *       500:
  *         description: Server error
  */
-loginRouter.post('/login', validateUser, authenticateUser)
+authRouter.post('/login', validateUser, authenticateUser)
 
-export default loginRouter;
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Déconnecter un utilisateur
+ *     description: Déconnecter un utilisateur et supprimer son refresh token de la base de données à partir de son email extrait du token.
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *       500:
+ *         description: Failed to log out.
+ */
+authRouter.post('/logout', verifyToken, logoutUser)
+
+export default authRouter;

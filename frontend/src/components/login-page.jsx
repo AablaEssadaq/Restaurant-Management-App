@@ -54,7 +54,7 @@ const LoginPage = () => {
         console.log('Form submitted successfully:', values);
 
         try {
-          const response = await axios.post(`${apiUrl}/api/login`, values);
+          const response = await axios.post(`${apiUrl}/api/auth/login`, values);
           // Handle successful response
           if (response.data.accessToken) {
           // Navigate to the dashboard page 

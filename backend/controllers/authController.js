@@ -49,4 +49,28 @@ export const authenticateUser = async(req,res) => {
     
 }
 
-export default authenticateUser;
+export const logoutUser = async (req, res) => {
+    try {
+      // Clear the refresh token from the database
+      console.log(req.email)
+
+      await User.findOneAndUpdate( {email :req.email} , {
+        refreshToken: null,
+        refreshTokenExpiresAt: null,
+      });
+  
+      // Clear the cookie
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+       // secure: true,
+        sameSite: "strict",
+      });
+  
+      return res.status(200).json({ message: "Logged out successfully." });
+
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to log out.", error : error.message });
+    }
+  };
+  
+

@@ -9,8 +9,8 @@ export function verifyToken(req,res,next) {
     if (token == null) return res.status(401).json({message:"Unauthorized"})
     jwt.verify(token,process.env.ACCESS_TOKEN_KEY,(err,user)=>{    //verify if the token is valid by verifying the signature with they secret key. The callback returns the error if the validation is not successful, and the token payload if it's successful
       if (err) return res.status(403).json({message:"Forbidden"})
-      const {role, ...userDetails} = user    
-      req.user = userDetails;
+      const {role, email} = user    
+      req.email = email;
       req.role = role;
     next()
     })
