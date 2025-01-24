@@ -8,12 +8,15 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import Dashboard from './components/Dashboard';
 import { Toaster } from './components/ui/toaster';
 import Layout from './components/Layout';
+import { UserProvider } from './context/UserContext';
+
 
 
 function App() {
 
   return (
     <>
+    <UserProvider>
     <Routes>
       <Route path="/register" element={<MultiStepForm />} />
       <Route path="/postRegister" element={<PostRegistrationPage />} />
@@ -24,6 +27,7 @@ function App() {
       </Route>
     </Routes>
     <Toaster />
+    </UserProvider>
     </>
   )
 }

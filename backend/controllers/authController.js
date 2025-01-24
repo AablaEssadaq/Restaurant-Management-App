@@ -3,12 +3,14 @@ import User from "../database/models/User.js";
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import Owner from "../database/models/Owner.js";
 
 dotenv.config()
 
 export const authenticateUser = async(req,res) => {
 
     const {email,password} = req.body;
+    let authUser={}
 
     try {
         const foundUser = await User.findOne({email})
@@ -28,6 +30,10 @@ export const authenticateUser = async(req,res) => {
         const tokenExpirationDate = new Date(decoded.exp * 1000); // Convert `exp` to milliseconds
         const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
+        if(foundUser.role==="owner"){
+          authUser = await Owner.findOne({email})
+        }
+        
         await User.findByIdAndUpdate(foundUser._id, {
             refreshToken: hashedRefreshToken,
             refreshTokenExpiresAt: tokenExpirationDate,
@@ -41,7 +47,7 @@ export const authenticateUser = async(req,res) => {
             maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
           });
 
-        return res.status(200).json({message: "Authenticated successfully !", accessToken,refreshToken})
+        return res.status(200).json({message: "Authenticated successfully !", accessToken,refreshToken,authUser})
 
     } catch (error) {
         return res.status(500).json({message : "Something went wrong !", error : error.message})
