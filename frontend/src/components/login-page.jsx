@@ -58,7 +58,7 @@ const LoginPage = () => {
           // Handle successful response
           if (response.data.accessToken) {
           // Navigate to the dashboard page 
-          navigate('/dashboard');
+          navigate('/');
          }
           
         } catch (error) {

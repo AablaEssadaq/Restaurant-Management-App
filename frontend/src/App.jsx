@@ -5,8 +5,9 @@ import MultiStepForm from './components/multi-step-form'
 import PostRegistrationPage from './components/post-registration'
 import './index.css'
 import '@fortawesome/fontawesome-free/css/all.css';
-import Dashboard from './components/dashboard';
+import Dashboard from './components/Dashboard';
 import { Toaster } from './components/ui/toaster';
+import Layout from './components/Layout';
 
 
 function App() {
@@ -14,10 +15,13 @@ function App() {
   return (
     <>
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<MultiStepForm />} />
       <Route path="/postRegister" element={<PostRegistrationPage />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Route>
     </Routes>
     <Toaster />
     </>
