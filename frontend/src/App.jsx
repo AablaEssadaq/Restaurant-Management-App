@@ -10,6 +10,7 @@ import { Toaster } from './components/ui/toaster';
 import Layout from './components/Layout';
 import { UserProvider } from './context/UserContext';
 import { RestaurantProvider } from './context/RestaurantContext';
+import SuppliersList from './components/SuppliersList';
 
 
 
@@ -26,6 +27,7 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/suppliers/list" element={<SuppliersList />} />
       </Route>
     </Routes>
     <Toaster />

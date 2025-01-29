@@ -22,16 +22,7 @@ const Dashboard = () => {
 
   return (
     <>
-    <main className="flex-1 overflow-auto p-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Bienvenue, { user ? user.firstName + " " + user.lastName : "Guest"}</h1>
-          <Avatar>
-            <AvatarImage src={user.avatar} />
-            <AvatarFallback>UN</AvatarFallback>
-          </Avatar>
-        </div>
-
+    <main className="flex-1 overflow-auto px-8 pt-4 pb-8">
         {/* Daily Summary */}
         <div className="mb-12">
           <h2 className="text-xl font-semibold mb-4">Résumé quotidien</h2>
