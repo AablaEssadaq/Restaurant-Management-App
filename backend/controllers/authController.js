@@ -4,13 +4,16 @@ import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import Owner from "../database/models/Owner.js";
+import Restaurant from "../database/models/Restaurant.js";
 
 dotenv.config()
 
 export const authenticateUser = async(req,res) => {
 
     const {email,password} = req.body;
+
     let authUser={}
+    let restaurant={}
 
     try {
         const foundUser = await User.findOne({email})
@@ -32,6 +35,8 @@ export const authenticateUser = async(req,res) => {
 
         if(foundUser.role==="owner"){
           authUser = await Owner.findOne({email})
+          authUser = { ...authUser.toObject(), avatar: foundUser.avatar };
+          restaurant = await Restaurant.findOne({owner_id: authUser._id})
         }
         
         await User.findByIdAndUpdate(foundUser._id, {
@@ -47,7 +52,7 @@ export const authenticateUser = async(req,res) => {
             maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
           });
 
-        return res.status(200).json({message: "Authenticated successfully !", accessToken,refreshToken,authUser})
+        return res.status(200).json({message: "Authenticated successfully !", accessToken,refreshToken,authUser,restaurant})
 
     } catch (error) {
         return res.status(500).json({message : "Something went wrong !", error : error.message})

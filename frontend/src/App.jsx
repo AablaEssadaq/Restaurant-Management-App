@@ -9,6 +9,7 @@ import Dashboard from './components/Dashboard';
 import { Toaster } from './components/ui/toaster';
 import Layout from './components/Layout';
 import { UserProvider } from './context/UserContext';
+import { RestaurantProvider } from './context/RestaurantContext';
 
 
 
@@ -17,6 +18,7 @@ function App() {
   return (
     <>
     <UserProvider>
+    <RestaurantProvider>
     <Routes>
       <Route path="/register" element={<MultiStepForm />} />
       <Route path="/postRegister" element={<PostRegistrationPage />} />
@@ -27,6 +29,7 @@ function App() {
       </Route>
     </Routes>
     <Toaster />
+    </RestaurantProvider>
     </UserProvider>
     </>
   )

@@ -24,10 +24,11 @@ const formSchema = z.object({
   phoneNumber: z.string().min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
   country: z.string().min(2, "Veuillez sélectionner un pays"),
   city: z.string().min(2, "La ville doit contenir au moins 2 caractères"),
+  avatar: z.any().optional(),
   
   // Restaurant Information
   restaurantName: z.string().min(2, "Le nom du restaurant doit contenir au moins 2 caractères"),
- // logo: z.string(),
+  logo: z.any().optional(),
   restaurantCountry: z.string().min(2, "Veuillez sélectionner un pays"),
   restaurantCity: z.string().min(2, "La ville doit contenir au moins 2 caractères"),
   restaurantStreet: z.string().min(5, "L'adresse doit contenir au moins 5 caractères"),
@@ -51,6 +52,10 @@ export function MultiStepForm() {
 
   const [step, setStep] = useState(0)
 
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
+
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -67,52 +72,50 @@ export function MultiStepForm() {
       country: '',
       city: '',
       restaurantName: '',
-    //  logo: '',
+      logo: '',
       restaurantCountry: '',
       restaurantCity: '',
       restaurantStreet: '',
+      avatar:'',
       email: '',
       password: '',
       confirmPassword: ''
     }
   })
 
+
   const onSubmit = async (data) => {
-    if (step < steps.length - 1) {
-      setStep(step + 1)
-    } else {
-      console.log('Form submitted:', data)
-      try {
-        // Replace 'http://your-backend-api.com/register' with your backend endpoint
-        const response = await axios.post(`${apiUrl}/api/register`, data);
+    const formData = new FormData();
   
-        // Handle successful response
-        console.log('Form submitted successfully:', response.data);
-  
-        // Navigate to the post-registration page or show a success message
-        navigate('/postRegister');
-      } catch (error) {
-        // Handle errors (e.g., validation errors, network issues)
-        console.error('Error submitting form:', error.response?.data || error.message);
-
-       {/* 
-         setAlertMessage(
-          error.response?.data?.message ||
-          "Une erreur s'est produite lors de la soumission du formulaire."
-        );
-        */}
-
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: `${error.response?.data?.message ||
-          "Une erreur s'est produite lors de la soumission du formulaire."}`,
-        })
-       
+    // Ajouter les autres champs
+    Object.keys(data).forEach((key) => {
+      if (key !== "avatar" && key !== "logo") { // Exclure les fichiers
+        formData.append(key, data[key]);
       }
-      
+    });
+  
+    // Ajouter les fichiers au FormData
+    if (avatarFile) formData.append("avatar", avatarFile);
+    if (logoFile) formData.append("logo", logoFile);
+  
+    try {
+      const response = await axios.post(`${apiUrl}/api/register`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Formulaire soumis avec succès:", response.data);
+      navigate("/postRegister");
+    } catch (error) {
+      console.error("Erreur lors de l'envoi:", error.response?.data || error.message);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: error.response?.data?.message || "Une erreur s'est produite.",
+      });
     }
-  }
+  };
+  
 
   const fieldsPerStep = [
     ["firstName", "lastName", "phoneNumber", "country", "city"], // Step 0
@@ -247,20 +250,23 @@ export function MultiStepForm() {
                     </FormItem>
                   )}
                 />
-                {/* 
-                <FormField
-                  control={form.control}
-                  name="logo"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Logo du restaurant</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="file" accept="image/*" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />*/}
+              <FormField
+               control={form.control}
+               name="logo"
+               render={() => (
+              <FormItem>
+              <FormLabel>Logo du restaurant</FormLabel>
+             <FormControl>
+             <Input
+               type="file"
+               accept="image/*"
+               onChange={(e) => setLogoFile(e.target.files[0])} // Mise à jour du state
+             />
+            </FormControl>
+            <FormMessage />
+            </FormItem>
+             )}
+            />
                   <FormField
                     control={form.control}
                     name="restaurantCountry"
@@ -316,6 +322,24 @@ export function MultiStepForm() {
             {step === 2 && (
               <>
               <div className='grid grid-cols-1 gap-4'>
+              <FormField
+               control={form.control}
+               name="avatar"
+               render={() => (
+              <FormItem>
+              <FormLabel>Avatar de l'utilisateur</FormLabel>
+              <FormControl>
+              <Input
+               type="file"
+               accept="image/*"
+               onChange={(e) => setAvatarFile(e.target.files[0])} // Mise à jour du state
+              />
+             </FormControl>
+             <FormMessage />
+             </FormItem>
+              )}
+            />
+                
                 <FormField
                   control={form.control}
                   name="email"

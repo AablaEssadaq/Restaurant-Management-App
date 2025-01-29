@@ -1,14 +1,18 @@
 import React from "react"
 import { Users, Monitor, Users2, Menu, ClipboardList, Package, BookOpenCheck, UserCog, Settings } from "lucide-react"
 import { Link } from "react-router-dom"
+import { useRestaurant } from "@/context/RestaurantContext";
 
 const Sidebar = () => {
+
+  const { restaurant } = useRestaurant();
+
   return (
     <aside className="w-64 bg-[#790117] text-white">
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-white rounded-full" /> {/* Logo placeholder */}
-          <h2 className="font-semibold">Restaurant Name</h2>
+          <img className="w-8 h-8 rounded-full" src={restaurant.logo} alt="logo"/>  
+          <h2 className="font-semibold">{restaurant.name}</h2>
         </div>
       </div>
 

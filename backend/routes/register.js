@@ -1,6 +1,7 @@
 import express from 'express'
 import { createOwnerAccount } from '../controllers/registerController.js'
 import validateOwner from '../middlewares/validateOwner.js';
+import multer from "../config/multer.js";
 
 export const registerRouter = express.Router()
 
@@ -68,6 +69,11 @@ export const registerRouter = express.Router()
  *         description: Server error
  */
 
-registerRouter.post('/register', validateOwner , createOwnerAccount)
+registerRouter.post('/register', multer.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "logo", maxCount: 1 },
+  ]),
+   validateOwner,
+   createOwnerAccount)
 
 export default registerRouter;

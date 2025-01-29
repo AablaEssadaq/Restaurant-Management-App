@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 import { useUser } from '@/context/UserContext.jsx'
+import { useRestaurant } from '@/context/RestaurantContext'
 
 
 const orderData = [
@@ -17,6 +18,7 @@ const COLORS = ['#790117', '#F7B336', '#DB7C24']
 const Dashboard = () => {
 
   const { user } = useUser(); 
+  const { restaurant } = useRestaurant(); 
 
   return (
     <>
@@ -25,7 +27,7 @@ const Dashboard = () => {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Bienvenue, { user ? user.firstName + " " + user.lastName : "Guest"}</h1>
           <Avatar>
-            <AvatarImage src="/placeholder.svg" />
+            <AvatarImage src={user.avatar} />
             <AvatarFallback>UN</AvatarFallback>
           </Avatar>
         </div>
