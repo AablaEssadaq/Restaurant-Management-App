@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 // Create the context
 const UserContext = createContext();
@@ -10,11 +10,26 @@ export const useUser = () => {
 
 // Create the provider component
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // User state to store the authenticated user
+  const [user, setUser] = useState(() => {
+      // Charger depuis localStorage au premier rendu
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+  })
 
-  return (
-    <UserContext.Provider value={{ user, setUser }}>
+useEffect(() => {
+    if (user) {
+      // Store the entire user object in localStorage
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      // Remove user from localStorage if it's null
+      localStorage.removeItem("user");
+    }
+  
+}, [user]);
+
+return (
+  <UserContext.Provider value={{ user, setUser }}>
       {children}
-    </UserContext.Provider>
-  );
-};
+  </UserContext.Provider>
+);
+}
