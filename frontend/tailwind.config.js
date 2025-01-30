@@ -34,7 +34,9 @@ module.exports = {
 			burgundy: '#790117',
 			"burgundy-hover":'#3f010c',
 			yellow: '#F7B336',
+			"yellow-hover": '#E9A01A',
 			orange: '#DB7C24',
+			"orange-hover": '#D07623',
   			muted: {
   				DEFAULT: 'hsl(var(--muted))',
   				foreground: 'hsl(var(--muted-foreground))'

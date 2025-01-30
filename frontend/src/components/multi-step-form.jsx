@@ -326,7 +326,7 @@ export function MultiStepForm() {
                control={form.control}
                name="avatar"
                render={() => (
-              <FormItem>
+              <FormItem className="w-1/2">
               <FormLabel>Avatar de l'utilisateur</FormLabel>
               <FormControl>
               <Input
