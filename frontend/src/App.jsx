@@ -11,6 +11,7 @@ import Layout from './components/Layout';
 import { UserProvider } from './context/UserContext';
 import { RestaurantProvider } from './context/RestaurantContext';
 import SuppliersList from './components/SuppliersList';
+import SuppliersOrders from './components/SuppliersOrders';
 
 
 
@@ -28,6 +29,7 @@ function App() {
         <Route index element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/suppliers/list" element={<SuppliersList />} />
+        <Route path="/suppliers/orders" element={<SuppliersOrders />} />
       </Route>
     </Routes>
     <Toaster />
