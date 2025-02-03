@@ -1,6 +1,7 @@
 import React from "react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"; 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const TableComponent = ({ columns, data }) => {
   return (
@@ -20,7 +21,21 @@ const TableComponent = ({ columns, data }) => {
           {data.map((item, index) => (
             <TableRow key={index}>
               {columns.map((col, colIndex) => (
-                <TableCell key={colIndex}>{item[col.key]}</TableCell>
+                <TableCell key={colIndex}>
+                  {col.key === "statut" ? ( // Apply badge only to "status" column
+                    <Badge 
+                      className={`
+                        ${item[col.key] === "Livrée" ? "bg-green-500 hover:bg-green-500  text-white" : ""}
+                        ${item[col.key] === "En attente" ? "bg-yellow hover:bg-yellow text-white" : ""}
+                        ${item[col.key] === "Annulée" ? "bg-red-500 hover:bg-red-500 text-white" : ""}
+                      `}
+                    >
+                      {item[col.key]}
+                    </Badge>
+                  ) : (
+                    item[col.key]
+                  )}
+                </TableCell>
               ))}
               <TableCell>
                 <div className="flex gap-2 justify-center items-center">

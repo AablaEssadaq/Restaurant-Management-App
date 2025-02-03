@@ -2,7 +2,7 @@ import { Plus, Search } from 'lucide-react'
 import React from 'react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
-import TableComponent from './ui/TableComponent'
+import TableComponent from './TableComponent'
 import {
     Pagination,
     PaginationContent,
@@ -20,31 +20,31 @@ const SuppliersOrders = () => {
           Fournisseur: "John Doe",
           dateCommande: "16-05-2025",
           dateLivraison: "16-05-2025",
-          statut:"en attente"
+          statut:"En attente"
         },
         {
           Fournisseur: "John Doe",
           dateCommande: "16-05-2025",
           dateLivraison: "16-05-2025",
-          statut:"en attente"
+          statut:"Livrée"
         },
         {
           Fournisseur: "John Doe",
           dateCommande: "16-05-2025",
           dateLivraison: "16-05-2025",
-          statut:"en attente"
+          statut:"Annulée"
         },
         {
           Fournisseur: "John Doe",
           dateCommande: "16-05-2025",
           dateLivraison: "16-05-2025",
-          statut:"en attente"
+          statut:"En attente"
         },
         {
           Fournisseur: "John Doe",
           dateCommande: "16-05-2025",
           dateLivraison: "16-05-2025",
-          statut:"en attente"
+          statut:"En attente"
           },
      
      
@@ -54,7 +54,7 @@ const SuppliersOrders = () => {
         { label: "Fournisseur", key: "Fournisseur" },
         { label: "Date de commande", key: "dateCommande" },
         { label: "Date de livraison", key: "dateLivraison" },
-        { label: "Status", key: "statut" }
+        { label: "Statut", key: "statut" }
       ];
 
   return (
