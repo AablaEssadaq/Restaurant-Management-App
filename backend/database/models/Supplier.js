@@ -20,7 +20,6 @@ export const supplierSchema = new mongoose.Schema({
   category:{ type: String, required: true },
   paymentMethod:{type:String},
   rib: {type:String},
-  owners: [{ type: mongoose.Schema.Types.ObjectId, ref: "Owner" }] // 🔗 Relation avec les propriétaires
 });
 
 

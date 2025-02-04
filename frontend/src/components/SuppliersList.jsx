@@ -35,54 +35,33 @@ const supplierSchema = z.object({
 });
 
 const columns = [
-  { label: "Nom Complet", key: "nomComplet" },
-  { label: "Catégorie", key: "catégorie" },
-  { label: "Téléphone", key: "téléphone" },
+  { label: "Nom", key: "lastName" },
+  { label: "Prénom", key: "firstName" },
+  { label: "Catégorie", key: "category" },
+  { label: "Téléphone", key: "phoneNumber" },
   { label: "Email", key: "email" },
 ];
-
-const suppliers = [
-  {
-    nomComplet: "John Doe",
-    catégorie: "Nourriture",
-    téléphone: "0612345678",
-    email:"johndoe@gmail.com"
-  },
-  {
-    nomComplet: "John Doe",
-    catégorie: "Nourriture",
-    téléphone: "0612345678",
-    email:"johndoe@gmail.com"
-  },
-  {
-    nomComplet: "John Doe",
-    catégorie: "Nourriture",
-    téléphone: "0612345678",
-    email:"johndoe@gmail.com"
-  },
-  {
-    nomComplet: "John Doe",
-    catégorie: "Nourriture",
-    téléphone: "0612345678",
-    email:"johndoe@gmail.com"
-  },
-  {
-    nomComplet: "John Doe",
-    catégorie: "Nourriture",
-    téléphone: "0612345678",
-    email:"johndoe@gmail.com"
-  },
-
-
-]
-
 
 const SuppliersList = () => {
 
   const  { user } = useUser()
-  const [loading, setLoading] = useState(true);
-  console.log("Current user:", user); 
+  const [suppliersData, setSuppliersData] = useState([]);
+
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      try {
+        const response = await axios.post(`${apiUrl}/api/suppliers/list`, {owner_id: user._id});
+        setSuppliersData(response.data.suppliers);
+        console.log(suppliersData)
+      } catch (error) {
+        console.error("Erreur de récupération des fournisseurs:", error);
+      }
+    };
   
+    if (user._id) {
+      fetchSuppliers();
+    }
+  }, [suppliersData]);
 
   const form = useForm({
     resolver: zodResolver(supplierSchema),
@@ -103,10 +82,6 @@ const SuppliersList = () => {
   // ✅ Handle form submission
   const onSubmit = async(values) => {
 
-    if (!user || !user._id) {
-      console.error("User is not logged in or user ID is missing");
-      return;  // Exit the function if user is not valid
-    }
     console.log("Form sent:", {...values, owner_id: user._id})
 
     try {
@@ -132,16 +107,6 @@ const SuppliersList = () => {
     }
     
   };
-
-  useEffect(() => {
-    if (user) {
-      setLoading(false);
-    }
-  }, [user]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="px-8 pt-2 pb-2">
@@ -314,7 +279,7 @@ const SuppliersList = () => {
       </div>
       <br/>
     
-    <TableComponent columns={columns} data={suppliers}/>
+    <TableComponent columns={columns} data={suppliersData}/>
    
 
 <div className='flex justify-center items-center'>

@@ -17,6 +17,7 @@ export const ownerSchema = new mongoose.Schema({
     match: /.+@.+\..+/ // Validation regex pour l'email
   },
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  suppliers: [{ type: mongoose.Schema.Types.ObjectId, ref: "Supplier" }],
 });
 
 
