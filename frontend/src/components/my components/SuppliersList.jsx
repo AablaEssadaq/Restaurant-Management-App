@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Input } from "./ui/input";
-import { Plus, Search } from "lucide-react";
-import { Button } from "./ui/button";
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import TableComponent from "./TableComponent";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useUser } from "@/context/UserContext";
-import axios from "axios";
 import { toast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { Plus, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 
 
@@ -46,13 +47,18 @@ const SuppliersList = () => {
 
   const  { user } = useUser()
   const [suppliersData, setSuppliersData] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const handleOpen = (item) => {
+    console.log(item)    
+    setSelectedItem(item);
+}
 
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
         const response = await axios.post(`${apiUrl}/api/suppliers/list`, {owner_id: user._id});
         setSuppliersData(response.data.suppliers);
-        console.log(suppliersData)
       } catch (error) {
         console.error("Erreur de récupération des fournisseurs:", error);
       }
@@ -279,7 +285,98 @@ const SuppliersList = () => {
       </div>
       <br/>
     
-    <TableComponent columns={columns} data={suppliersData}/>
+    { /* Suppliers Table */}
+      <div className="overflow-auto pb-4">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {columns.map((col, index) => (
+              <TableHead key={index} className="text-black">
+                {col.label}
+              </TableHead>
+            ))}
+            <TableHead className="text-black text-center">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {suppliersData.map((item, index) => (
+            <TableRow key={index}>
+              {columns.map((col, colIndex) => (
+                <TableCell key={colIndex}>
+                  {item[col.key]}
+                </TableCell>
+              ))}
+              <TableCell>
+                <div className="flex gap-2 justify-center items-center">
+              <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="bg-yellow hover:bg-yellow-hover" size="sm" onClick={() => handleOpen(item)}>
+                        Voir détails
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Détails</DialogTitle>
+                      </DialogHeader>
+                      {selectedItem && (
+                        <form className="grid grid-cols-2 gap-4">
+                         <div>
+                          <Label> Nom</Label>
+                          <Input value={item.lastName} disabled />
+                         </div>
+                         <div>
+                          <Label> Prénom</Label>
+                          <Input value={item.firstName} disabled />
+                         </div>
+                         <div>
+                          <Label> Téléphone</Label>
+                          <Input value={item.phoneNumber} disabled />
+                         </div>
+                         <div>
+                          <Label> Email</Label>
+                          <Input value={item.email} disabled />
+                         </div>
+                         <div>
+                          <Label> Pays</Label>
+                          <Input value={item.address.country} disabled />
+                         </div>
+                         <div>
+                          <Label> Ville</Label>
+                          <Input value={item.address.city} disabled />
+                         </div>
+                         <div>
+                          <Label>Adresse</Label>
+                          <Input value={item.address.street} disabled />
+                         </div>
+                         <div>
+                          <Label> Catégorie</Label>
+                          <Input value={item.category} disabled />
+                         </div>
+                         <div>
+                          <Label> Méthode de paiement</Label>
+                          <Input value={item.paymentMethod} disabled />
+                         </div>
+                         <div>
+                          <Label>RIB</Label>
+                          <Input value={item.rib} disabled />
+                         </div>
+                        </form>
+                      )}
+                    </DialogContent>
+                  </Dialog>
+                  <Button className="bg-orange hover:bg-orange-hover" size="sm">
+                    Modifier
+                  </Button>
+                  <Button className="bg-burgundy hover:bg-burgundy-hover" size="sm">
+                    Supprimer
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
    
 
 <div className='flex justify-center items-center'>

@@ -1,17 +1,17 @@
 
 import { Routes,Route } from 'react-router-dom';
-import LoginPage from './components/login-page';
-import MultiStepForm from './components/multi-step-form'
-import PostRegistrationPage from './components/post-registration'
+import LoginPage from './pages/login-page';
+import MultiStepForm from './pages/multi-step-form'
+import PostRegistrationPage from './pages/post-registration'
 import './index.css'
 import '@fortawesome/fontawesome-free/css/all.css';
-import Dashboard from './components/Dashboard';
+import Dashboard from './components/my components/Dashboard';
 import { Toaster } from './components/ui/toaster';
-import Layout from './components/Layout';
+import Layout from './components/my components/Layout';
 import { UserProvider } from './context/UserContext';
 import { RestaurantProvider } from './context/RestaurantContext';
-import SuppliersList from './components/SuppliersList';
-import SuppliersOrders from './components/SuppliersOrders';
+import SuppliersList from './components/my components/SuppliersList';
+import SuppliersOrders from './components/my components/SuppliersOrders';
 
 
 

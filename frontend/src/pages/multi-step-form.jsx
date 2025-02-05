@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ProgressSteps } from './progress-steps'
+import { ProgressSteps } from '../components/my components/progress-steps.jsx'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from "@/hooks/use-toast"
 import axios from 'axios';
