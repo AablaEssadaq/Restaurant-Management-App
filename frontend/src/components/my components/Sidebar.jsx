@@ -2,10 +2,13 @@ import React, { useState } from "react"
 import { Users, Monitor, Users2, Menu, ClipboardList, Package, BookOpenCheck, UserCog, Settings, ChevronDown, ChevronRight, BookUser, Truck } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useRestaurant } from "@/context/RestaurantContext";
+import { useSelector } from "react-redux";
 
 const Sidebar = () => {
 
-  const { restaurant } = useRestaurant();
+ // const { restaurant } = useRestaurant();
+ const restaurant = useSelector((state) => state.auth.restaurant); 
+ 
   const [suppliersOpen, setSuppliersOpen] = useState(false)
 
   const sidebarItems = [

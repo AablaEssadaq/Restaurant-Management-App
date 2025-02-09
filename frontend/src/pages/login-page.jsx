@@ -13,8 +13,10 @@ import { useToast } from "@/hooks/use-toast"
 import axios from 'axios';
 import { useUser } from '@/context/UserContext';
 import { useRestaurant } from '@/context/RestaurantContext';
+import { useDispatch } from 'react-redux';
+import { setUser } from '@/store/authSlice';
 
- 
+
 
 
 
@@ -32,9 +34,11 @@ const LoginPage = () => {
 
     const { toast } = useToast()
 
-    const { setUser } = useUser(); // Access the setUser function from context
+   // const { setUser } = useUser(); // Access the setUser function from context
 
     const { setRestaurant } = useRestaurant(); 
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         document.body.className = "h-screen flex justify-center items-center bg-beige text-foreground"; // Ajoute une classe au body en l'accèdant via le DOM, pas directement
@@ -65,9 +69,10 @@ const LoginPage = () => {
           if (response.data.accessToken) {
            const userData = response.data.authUser; 
            const restauData = response.data.restaurant;
-           setUser(userData); // Update the user in context
+           //setUser(userData); // Update the user in context
            console.log(userData)
-           setRestaurant(restauData); 
+           dispatch(setUser({ user: userData, restaurant: restauData }));
+           //setRestaurant(restauData); 
            // Navigate to the dashboard page 
            navigate('/');
          }

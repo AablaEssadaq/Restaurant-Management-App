@@ -1,10 +1,12 @@
 import { useUser } from '@/context/UserContext';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import React from 'react'
+import { useSelector } from 'react-redux';
 
 const Header = () => {
 
-  const { user } = useUser(); 
+  //const { user } = useUser();
+  const user = useSelector((state) => state.auth.user); 
 
   return (
     <>

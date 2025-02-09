@@ -4,7 +4,6 @@ import { Label } from "@/components/ui/label"
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -12,12 +11,11 @@ import {
 } from "@/components/ui/pagination"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useUser } from "@/context/UserContext"
 import { toast } from "@/hooks/use-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { Plus, Search } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Button } from "../ui/button"
@@ -33,6 +31,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { useSelector } from "react-redux"
 
 const apiUrl = import.meta.env.VITE_URL_BASE
 
@@ -60,11 +59,14 @@ const columns = [
 ]
 
 const SuppliersList = () => {
-
-  const { user } = useUser()
+  // const { user } = useUser()
+  const user = useSelector((state) => state.auth.user)
   const [suppliersData, setSuppliersData] = useState([])
   const [selectedItem, setSelectedItem] = useState(null)
   const [editFormData, setEditFormData] = useState({})
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(5)
+  const [searchQuery, setSearchQuery] = useState("")
 
   const handleOpen = (item) => {
     console.log(item)
@@ -76,20 +78,112 @@ const SuppliersList = () => {
     setEditFormData((prevData) => ({ ...prevData, [name]: value }))
   }
 
-  useEffect(() => {
-    const fetchSuppliers = async () => {
-      try {
-        const response = await axios.post(`${apiUrl}/api/suppliers/list`, { owner_id: user._id })
-        setSuppliersData(response.data.suppliers)
-      } catch (error) {
-        console.error("Erreur de récupération des fournisseurs:", error)
-      }
+   // Move fetchSuppliers to useCallback to prevent recreation
+   const fetchSuppliers = useCallback(async () => {
+    try {
+      const response = await axios.post(`${apiUrl}/api/suppliers/list`, { owner_id: user._id })
+      setSuppliersData(response.data.suppliers)
+    } catch (error) {
+      console.error("Erreur de récupération des fournisseurs:", error)
     }
+  }, [user._id])
 
+  useEffect(() => {
     if (user._id) {
       fetchSuppliers()
     }
-  }, [suppliersData])
+  }, [user._id, fetchSuppliers])
+
+  //Filter suppliers
+  const filteredSuppliers = suppliersData.filter((supplier) => {
+    const searchFields = [
+      supplier.lastName,
+      supplier.firstName,
+      supplier.category,
+      supplier.phoneNumber,
+      supplier.email
+    ].map(field => (field || "").toLowerCase())
+    
+    const query = searchQuery.toLowerCase()
+    
+    return searchFields.some(field => field.includes(query))
+  })
+
+  // Reset to first page when search query changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery])
+
+
+    // Calculate pagination with filtered results
+  const totalItems = filteredSuppliers.length
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage))
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredSuppliers.slice(indexOfFirstItem, indexOfLastItem)
+
+   // Ensure current page is within valid range
+   useEffect(() => {
+     if (currentPage > totalPages) {
+       setCurrentPage(totalPages)
+     }
+   }, [totalPages, currentPage])
+ 
+
+   // Handle page changes
+   const paginate = (pageNumber) => {
+     if (pageNumber >= 1 && pageNumber <= totalPages) {
+       setCurrentPage(pageNumber)
+     }
+   }
+ 
+   // Generate page numbers array
+   const getPageNumbers = () => {
+     const pageNumbers = []
+     const maxPagesToShow = 5 // Show up to 5 page numbers
+     
+     if (totalPages <= maxPagesToShow) {
+       // If total pages is less than max pages to show, display all pages
+       for (let i = 1; i <= totalPages; i++) {
+         pageNumbers.push(i)
+       }
+     } else {
+       // Always show first page
+       pageNumbers.push(1)
+       
+       // Calculate start and end of page numbers to show
+       let start = Math.max(2, currentPage - 1)
+       let end = Math.min(totalPages - 1, currentPage + 1)
+       
+       // Adjust start and end to always show 3 pages
+       if (currentPage <= 2) {
+         end = 4
+       }
+       if (currentPage >= totalPages - 1) {
+         start = totalPages - 3
+       }
+       
+       // Add ellipsis if needed
+       if (start > 2) {
+         pageNumbers.push('...')
+       }
+       
+       // Add page numbers
+       for (let i = start; i <= end; i++) {
+         pageNumbers.push(i)
+       }
+       
+       // Add ellipsis if needed
+       if (end < totalPages - 1) {
+         pageNumbers.push('...')
+       }
+       
+       // Always show last page
+       pageNumbers.push(totalPages)
+     }
+     
+     return pageNumbers
+   }
 
   const form = useForm({
     resolver: zodResolver(supplierSchema),
@@ -148,6 +242,7 @@ const SuppliersList = () => {
         className: "border-green-500 bg-green-100 text-green-900",
       })
       // Update the suppliers list or refetch data here
+      fetchSuppliers() //Refetch data after edit
     } catch (error) {
       console.error("Erreur lors de la modification:", error.response?.data || error.message)
       toast({
@@ -156,13 +251,24 @@ const SuppliersList = () => {
         description: error.response?.data?.message || "Une erreur s'est produite.",
       })
     }
-    
   }
 
-  const handleDelete = async(supplier) => {
+  const handleDelete = async (supplier) => {
     try {
-      const response = await axios.delete(`${apiUrl}/api/suppliers/list/delete/${supplier._id}`)
-      console.log("Fournisseur supprimé avec succès:", response.data)
+      await axios.delete(`${apiUrl}/api/suppliers/list/delete/${supplier._id}`)
+      
+      // Update local state immediately
+      setSuppliersData(currentSuppliers => 
+        currentSuppliers.filter(s => s._id !== supplier._id)
+      )
+      
+      // Check if we need to adjust current page
+      const newTotalItems = suppliersData.length - 1
+      const newTotalPages = Math.max(1, Math.ceil(newTotalItems / itemsPerPage))
+      if (currentPage > newTotalPages) {
+        setCurrentPage(newTotalPages)
+      }
+
       toast({
         title: "Succès",
         description: "Fournisseur supprimé.",
@@ -175,18 +281,17 @@ const SuppliersList = () => {
         title: "Erreur",
         description: error.response?.data?.message || "Une erreur s'est produite.",
       })
+      // Refresh the list in case of error to ensure consistency
+      fetchSuppliers()
     }
-    
   }
 
   return (
     <div className="px-8 pt-2 pb-2">
       <div className="flex justify-between items-center">
         <div className="flex gap-1">
-          <Input className="h-8 bg-white" placeholder="Recherche" />
-          <button>
-            <Search />
-          </button>
+          <Input className="h-8 bg-white" placeholder="Recherche" value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} />
         </div>
 
         <Dialog>
@@ -407,7 +512,6 @@ const SuppliersList = () => {
       </div>
       <br />
 
-      {/* Suppliers Table */}
       <div className="overflow-auto pb-4">
         <Table>
           <TableHeader>
@@ -421,7 +525,14 @@ const SuppliersList = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {suppliersData.map((item, index) => (
+            {currentItems.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length + 1} className="text-center py-4">
+                  Aucun résultat trouvé
+                </TableCell>
+              </TableRow>
+            ) : 
+            (currentItems.map((item, index) => (
               <TableRow key={index}>
                 {columns.map((col, colIndex) => (
                   <TableCell key={colIndex}>{item[col.key]}</TableCell>
@@ -617,7 +728,10 @@ const SuppliersList = () => {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Annuler</AlertDialogCancel>
-                          <AlertDialogAction className="bg-burgundy hover:bg-burgundy-hover" onClick={() => handleDelete(item)}>
+                          <AlertDialogAction
+                            className="bg-burgundy hover:bg-burgundy-hover"
+                            onClick={() => handleDelete(item)}
+                          >
                             Supprimer
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -626,25 +740,43 @@ const SuppliersList = () => {
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
+            )))}
           </TableBody>
         </Table>
       </div>
 
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center mt-4">
         <Pagination>
           <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" />
+            <PaginationItem className="cursor-pointer">
+              <PaginationPrevious
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+              />
             </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
+            
+            {getPageNumbers().map((pageNumber, index) => (
+              <PaginationItem key={index}>
+                {pageNumber === '...' ? (
+                  <span className="px-3 py-2">...</span>
+                ) : (
+                  <PaginationLink className="cursor-pointer"
+                    onClick={() => paginate(pageNumber)}
+                    isActive={currentPage === pageNumber}
+                  >
+                    {pageNumber}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+            
+            <PaginationItem className="cursor-pointer">
+              <PaginationNext
+                onClick={() => paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+              />
             </PaginationItem>
           </PaginationContent>
         </Pagination>
@@ -653,5 +785,4 @@ const SuppliersList = () => {
   )
 }
 
-export default SuppliersList
-
+export default SuppliersList 
