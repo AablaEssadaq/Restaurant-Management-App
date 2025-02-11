@@ -31,7 +31,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { setSuppliers } from "@/store/suppliersSlice"
 
 const apiUrl = import.meta.env.VITE_URL_BASE
 
@@ -68,6 +69,8 @@ const SuppliersList = () => {
   const [itemsPerPage] = useState(5)
   const [searchQuery, setSearchQuery] = useState("")
 
+  const dispatch = useDispatch();
+
   const handleOpen = (item) => {
     console.log(item)
     setSelectedItem(item)
@@ -83,10 +86,11 @@ const SuppliersList = () => {
     try {
       const response = await axios.post(`${apiUrl}/api/suppliers/list`, { owner_id: user._id })
       setSuppliersData(response.data.suppliers)
+      dispatch(setSuppliers({ suppliers:response.data.suppliers }));
     } catch (error) {
       console.error("Erreur de récupération des fournisseurs:", error)
     }
-  }, [user._id])
+  }, [user._id,dispatch])
 
   useEffect(() => {
     if (user._id) {
@@ -292,11 +296,13 @@ const SuppliersList = () => {
         <div className="flex gap-1">
           <Input className="h-8 bg-white" placeholder="Recherche" value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)} />
+        <Search/>
         </div>
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="bg-green-600 hover:bg-green-800">
+            <Button className=
+          "bg-green-600 hover:bg-green-800">
               <span>
                 <Plus />
               </span>

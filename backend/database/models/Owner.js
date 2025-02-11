@@ -18,6 +18,7 @@ export const ownerSchema = new mongoose.Schema({
   },
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   suppliers: [{ type: mongoose.Schema.Types.ObjectId, ref: "Supplier" }],
+  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 });
 
 

@@ -1,3 +1,4 @@
+import { Order } from "../database/models/Order.js";
 import Owner from "../database/models/Owner.js";
 import Supplier from "../database/models/Supplier.js";
 
@@ -79,19 +80,27 @@ export const editSupplier = async(req,res) => {
 }
 
 
-export const deleteSupplier = async(req,res) => {
-try {
-  const { id } = req.params;
-  const supplier = await Supplier.findOneAndDelete({ _id: id })
+export const deleteSupplier = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  if (!supplier) {
-    return res.status(404).json({ message: "Supplier not found" });
+    // Find the supplier before deleting
+    const supplier = await Supplier.findById(id);
+    if (!supplier) {
+      return res.status(404).json({ message: "Supplier not found" });
+    }
+
+    // Delete order referencing the supplier
+    await Order.deleteMany({ supplier: id });
+
+    // Remove supplier from all owners who had it in their array
+    await Owner.updateMany({ suppliers: id }, { $pull: { suppliers: id } });
+
+    // Delete the supplier
+    await Supplier.findByIdAndDelete(id);
+
+    return res.status(200).json({ message: "Supplier deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong.", error: error.message });
   }
-  
-  return res.status(200).json({ message: "Supplier deleted successfully" });
-} 
-catch (error) {
-  return res.status(500).json({ message: "Something went wrong.", error: error.message });
-}
-
-}
+};

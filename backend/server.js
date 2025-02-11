@@ -9,6 +9,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser';
 import refreshTokenRouter from './routes/refreshToken.js';
 import { suppliersRouter } from './routes/suppliers.js';
+import { ordersRouter } from './routes/orders.js';
 dotenv.config();
 
 const app = express()
@@ -19,7 +20,7 @@ app.use(cors())
 app.use(cookieParser());
 app.use('/api',[registerRouter,refreshTokenRouter])
 app.use('/api/auth',authRouter)
-app.use('/api/suppliers',suppliersRouter)
+app.use('/api/suppliers',[suppliersRouter,ordersRouter])
 
 
 // Définir la configuration de Swagger
