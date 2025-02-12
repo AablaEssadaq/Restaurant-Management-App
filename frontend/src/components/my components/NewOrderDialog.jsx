@@ -60,8 +60,14 @@ const NewOrderDialog = ({ uniqueSuppliers, fetchOrders }) => {
       .array(
         z.object({
           product: z.string().min(1, "Le nom du produit est requis"),
-          quantity: z.number().min(1, "La quantité doit être au moins 1"),
-          price: z.number().min(0, "Le prix ne peut pas être négatif"),
+          quantity: z.string().min(1).transform((val) => {
+            const num = Number(val);
+            return isNaN(num) ? 0 : num;
+          }),
+          price: z.string().min(1).transform((val) => {
+            const num = Number(val);
+            return isNaN(num) ? 0 : num;
+          }),
         })
       )
       .min(1, "Au moins un produit est requis"),
@@ -76,7 +82,7 @@ const NewOrderDialog = ({ uniqueSuppliers, fetchOrders }) => {
       shippingDate: new Date().toISOString().split('T')[0],
       //status: "En cours",
       supplier_id:"",
-      products: [{ product: '', quantity: 1, price: 0 }],
+      products: [{ product: '', quantity: '', price: '' }],
       //total: 0,
 
     },
@@ -241,49 +247,49 @@ const NewOrderDialog = ({ uniqueSuppliers, fetchOrders }) => {
                   />
                   
                   <FormField
-                    control={form.control}
-                    name={`products.${index}.quantity`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={index !== 0 ? "sr-only" : undefined}>
-                          Quantité
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field}
-                            type="number" 
-                            placeholder="Quantité"
-                            min="1"
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+            control={form.control}
+            name={`products.${index}.quantity`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className={index !== 0 ? "sr-only" : undefined}>
+                  Quantité
+                </FormLabel>
+                <FormControl>
+                  <Input 
+                    {...field}
+                    type="number" 
+                    placeholder="Quantité"
+                    min="1"
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name={`products.${index}.price`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className={index !== 0 ? "sr-only" : undefined}>
+                  Prix unitaire
+                </FormLabel>
+                <FormControl>
+                  <Input 
+                    {...field}
+                    type="number" 
+                    placeholder="Prix unitaire"
+                    step="0.01"
+                    min="0"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> 
                   
-                  <FormField
-                    control={form.control}
-                    name={`products.${index}.price`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={index !== 0 ? "sr-only" : undefined}>
-                          Prix unitaire
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field}
-                            type="number" 
-                            placeholder="Prix unitaire"
-                            step="0.01"
-                            min="0"
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                 
                   
                   <Button
                     type="button"

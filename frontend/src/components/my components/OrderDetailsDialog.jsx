@@ -79,7 +79,7 @@ const OrderDetailsDialog = ({ order }) => {
             <label className="text-sm font-medium">Statut</label>
             <div className="mt-1">
               <Badge className={` 
-                ${order.status === "livrée" ? "bg-green-500 hover:bg-green-500 text-white" : ""} 
+                ${order.status === "Livrée" ? "bg-green-500 hover:bg-green-500 text-white" : ""} 
                 ${order.status === "En cours" ? "bg-yellow hover:bg-yellow text-white" : ""} 
                 ${order.status === "Annulée" ? "bg-red-500 hover:bg-red-500 text-white" : ""} 
               `}>
@@ -100,28 +100,32 @@ const OrderDetailsDialog = ({ order }) => {
 
         <div className="mt-4">
           <label className="text-sm font-medium">Produits</label>
-          <ScrollArea className="h-65 mt-2 rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Produit</TableHead>
-                  <TableHead>Quantité</TableHead>
-                  <TableHead>Prix unitaire</TableHead>
-                  <TableHead>Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {order.products.map((product, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{product.product}</TableCell>
-                    <TableCell>{product.quantity}</TableCell>
-                    <TableCell>{product.price.toLocaleString()}$</TableCell>
-                    <TableCell>{(product.quantity * product.price).toLocaleString()}$</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollArea>
+          <div className="mt-2 border rounded-md border-gray-600">
+            <ScrollArea className="h-[200px] w-full">
+              <div className="p-4">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-white">
+                    <TableRow>
+                      <TableHead>Produit</TableHead>
+                      <TableHead>Quantité</TableHead>
+                      <TableHead>Prix unitaire</TableHead>
+                      <TableHead>Total</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {order.products.map((product, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{product.product}</TableCell>
+                        <TableCell>{product.quantity}</TableCell>
+                        <TableCell>{product.price.toLocaleString()}$</TableCell>
+                        <TableCell>{(product.quantity * product.price).toLocaleString()}$</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </ScrollArea>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

@@ -34,6 +34,7 @@ import { z } from "zod"
 import { toast } from "@/hooks/use-toast"
 import NewOrderDialog from "./NewOrderDialog"
 import OrderDetailsDialog from "./OrderDetailsDialog"
+import OrderEditDialog from "./OrderEditDialog"
 
 const formatDate = (dateString) => {
   return format(new Date(dateString), "dd-MM-yyyy", { locale: fr })
@@ -108,6 +109,7 @@ const SuppliersOrders = () => {
       try {
         const response = await axios.post(`${apiUrl}/api/suppliers/orders`, { owner_id: user._id })
         setOrdersData(response.data.orders)
+        console.log(response.data.orders)
       } catch (error) {
         console.error("Erreur de récupération des commandes:", error)
       }
@@ -305,7 +307,7 @@ const SuppliersOrders = () => {
              : col.key === "status"
              ? (
                <Badge className={` 
-                ${item[col.key] === "livrée" ? "bg-green-500 hover:bg-green-500 text-white" : ""} 
+                ${item[col.key] === "Livrée" ? "bg-green-500 hover:bg-green-500 text-white" : ""} 
                 ${item[col.key] === "En cours" ? "bg-yellow hover:bg-yellow text-white" : ""} 
                 ${item[col.key] === "Annulée" ? "bg-red-500 hover:bg-red-500 text-white" : ""} 
               `}>
@@ -321,9 +323,7 @@ const SuppliersOrders = () => {
               <TableCell>
                 <div className="flex gap-2 justify-center items-center">
                 <OrderDetailsDialog order={item} />
-                  <Button className="bg-orange hover:bg-orange-hover" size="sm">
-                    Modifier
-                  </Button>
+                <OrderEditDialog order={item} uniqueSuppliers={uniqueSuppliers} fetchOrders={fetchOrders} />
                   <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button className="bg-burgundy hover:bg-burgundy-hover" size="sm">
