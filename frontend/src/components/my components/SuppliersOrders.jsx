@@ -35,6 +35,7 @@ import { toast } from "@/hooks/use-toast"
 import NewOrderDialog from "./NewOrderDialog"
 import OrderDetailsDialog from "./OrderDetailsDialog"
 import OrderEditDialog from "./OrderEditDialog"
+import api from "@/config/api"
 
 const formatDate = (dateString) => {
   return format(new Date(dateString), "dd-MM-yyyy", { locale: fr })
@@ -106,13 +107,15 @@ const SuppliersOrders = () => {
 
     // Move fetchSuppliers to useCallback to prevent recreation
   const fetchOrders = useCallback(async () => {
-      try {
-        const response = await axios.post(`${apiUrl}/api/suppliers/orders`, { owner_id: user._id })
-        setOrdersData(response.data.orders)
-        console.log(response.data.orders)
-      } catch (error) {
-        console.error("Erreur de récupération des commandes:", error)
-      }
+
+    api.post("/api/suppliers/orders", { owner_id: user._id })
+    .then(response => {
+      setOrdersData(response.data.orders)
+      console.log(response.data.orders)
+    })
+    .catch((error)=> {
+      console.error("Erreur de récupération des commandes:", error)
+    });
     }, [user._id])
   
     useEffect(() => {
@@ -229,28 +232,29 @@ const SuppliersOrders = () => {
     ];
 
     const handleDelete = async (order) => {
-      try {
-        await axios.delete(`${apiUrl}/api/suppliers/orders/delete/${order._id}`)
-        
-        // Update local state immediately
-        setOrdersData(currentOrders => 
-          currentOrders.filter(s => s._id !== order._id)
-        )
-        
-        // Check if we need to adjust current page
-        const newTotalItems = ordersData.length - 1
-        const newTotalPages = Math.max(1, Math.ceil(newTotalItems / itemsPerPage))
-        if (currentPage > newTotalPages) {
-          setCurrentPage(newTotalPages)
-        }
-  
-        toast({
-          title: "Succès",
-          description: "Commande supprimée.",
-          className: "border-green-500 bg-green-100 text-green-900",
-        })
-      } catch (error) {
-        console.error("Erreur lors de la suppression:", error.response?.data || error.message)
+
+    api.delete(`/api/suppliers/orders/delete/${order._id}`)
+    .then(response => {
+     // Update local state immediately
+     setOrdersData(currentOrders => 
+      currentOrders.filter(s => s._id !== order._id)
+    )
+    
+    // Check if we need to adjust current page
+    const newTotalItems = ordersData.length - 1
+    const newTotalPages = Math.max(1, Math.ceil(newTotalItems / itemsPerPage))
+    if (currentPage > newTotalPages) {
+      setCurrentPage(newTotalPages)
+    }
+
+    toast({
+      title: "Succès",
+      description: "Commande supprimée.",
+      className: "border-green-500 bg-green-100 text-green-900",
+    })
+    })
+    .catch((error)=> {
+      console.error("Erreur lors de la suppression:", error.response?.data || error.message)
         toast({
           variant: "destructive",
           title: "Erreur",
@@ -258,7 +262,8 @@ const SuppliersOrders = () => {
         })
         // Refresh the list in case of error to ensure consistency
         fetchOrders()
-      }
+    });
+
     }
 
   return (

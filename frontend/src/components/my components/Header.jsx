@@ -1,6 +1,4 @@
-import { useUser } from '@/context/UserContext';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import React from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSelector } from 'react-redux';
 
 const Header = () => {

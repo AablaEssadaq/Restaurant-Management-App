@@ -13,6 +13,7 @@ import { ProgressSteps } from '../components/my components/progress-steps.jsx'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from "@/hooks/use-toast"
 import axios from 'axios';
+import api from '@/config/api.js'
 
 
 const apiUrl = import.meta.env.VITE_URL_BASE;
@@ -25,14 +26,14 @@ const formSchema = z.object({
   country: z.string().min(2, "Veuillez sélectionner un pays"),
   city: z.string().min(2, "La ville doit contenir au moins 2 caractères"),
   avatar: z.any().optional(),
-  
+
   // Restaurant Information
   restaurantName: z.string().min(2, "Le nom du restaurant doit contenir au moins 2 caractères"),
   logo: z.any().optional(),
   restaurantCountry: z.string().min(2, "Veuillez sélectionner un pays"),
   restaurantCity: z.string().min(2, "La ville doit contenir au moins 2 caractères"),
   restaurantStreet: z.string().min(5, "L'adresse doit contenir au moins 5 caractères"),
-  
+
   // Credentials
   email: z.string().email("Veuillez entrer une adresse email valide"),
   password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
@@ -62,7 +63,7 @@ export function MultiStepForm() {
   const navigate = useNavigate();
 
   const { toast } = useToast()
-  
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -76,7 +77,7 @@ export function MultiStepForm() {
       restaurantCountry: '',
       restaurantCity: '',
       restaurantStreet: '',
-      avatar:'',
+      avatar: '',
       email: '',
       password: '',
       confirmPassword: ''
@@ -86,36 +87,38 @@ export function MultiStepForm() {
 
   const onSubmit = async (data) => {
     const formData = new FormData();
-  
+
     // Ajouter les autres champs
     Object.keys(data).forEach((key) => {
       if (key !== "avatar" && key !== "logo") { // Exclure les fichiers
         formData.append(key, data[key]);
       }
     });
-  
+
     // Ajouter les fichiers au FormData
     if (avatarFile) formData.append("avatar", avatarFile);
     if (logoFile) formData.append("logo", logoFile);
-  
-    try {
-      const response = await axios.post(`${apiUrl}/api/register`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+
+
+    api.post("/api/register", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+      .then(response => {
+        console.log("Formulaire soumis avec succès:", response.data);
+        navigate("/postRegister");
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'envoi:", error.response?.data || error.message);
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: error.response?.data?.message || "Une erreur s'est produite.",
+        });
       });
-      console.log("Formulaire soumis avec succès:", response.data);
-      navigate("/postRegister");
-    } catch (error) {
-      console.error("Erreur lors de l'envoi:", error.response?.data || error.message);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: error.response?.data?.message || "Une erreur s'est produite.",
-      });
-    }
   };
-  
+
 
   const fieldsPerStep = [
     ["firstName", "lastName", "phoneNumber", "country", "city"], // Step 0
@@ -128,11 +131,11 @@ export function MultiStepForm() {
   }
 
   const handleNextStep = async () => {
-    
+
     const currentStepFields = getCurrentStepFields(step);
     console.log(currentStepFields);
     const isStepValid = await form.trigger(currentStepFields)
-    
+
     if (isStepValid) {
       if (step < steps.length - 1) {
         setStep(step + 1)
@@ -144,301 +147,301 @@ export function MultiStepForm() {
 
   return (
     <>
-    <Card className="relative w-full max-w-2xl mx-auto my-5">
-      <CardHeader className="space-y-2 border-b border-border/50 pb-8 pt-6 text-center">
-        <CardTitle className="text-2xl font-bold text-[#8B1F41] my-2">Créer votre compte</CardTitle>
-        <ProgressSteps currentStep={step} steps={steps} />
-      </CardHeader>
-      <CardContent className="p-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {step === 0 && (
-              <>
-              <div className='grid grid-cols-2 gap-4'>
-              <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nom</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Prénom</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                  <FormField
-                    control={form.control}
-                    name="country"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Pays</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+      <Card className="relative w-full max-w-2xl mx-auto my-5">
+        <CardHeader className="space-y-2 border-b border-border/50 pb-8 pt-6 text-center">
+          <CardTitle className="text-2xl font-bold text-[#8B1F41] my-2">Créer votre compte</CardTitle>
+          <ProgressSteps currentStep={step} steps={steps} />
+        </CardHeader>
+        <CardContent className="p-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {step === 0 && (
+                <>
+                  <div className='grid grid-cols-2 gap-4'>
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nom</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Sélectionner" />
-                            </SelectTrigger>
+                            <Input {...field} />
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="france">France</SelectItem>
-                            <SelectItem value="belgique">Belgique</SelectItem>
-                            <SelectItem value="suisse">Suisse</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ville</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Téléphone</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="tel" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                </div>
-                
-              </>
-            )}
-
-            {step === 1 && (
-              <>
-              <div className='grid grid-cols-2 gap-4'>
-                <FormField
-                  control={form.control}
-                  name="restaurantName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nom du restaurant</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              <FormField
-               control={form.control}
-               name="logo"
-               render={() => (
-              <FormItem>
-              <FormLabel>Logo du restaurant</FormLabel>
-             <FormControl>
-             <Input
-               type="file"
-               accept="image/*"
-               onChange={(e) => setLogoFile(e.target.files[0])} // Mise à jour du state
-             />
-            </FormControl>
-            <FormMessage />
-            </FormItem>
-             )}
-            />
-                  <FormField
-                    control={form.control}
-                    name="restaurantCountry"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Pays</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Prénom</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Sélectionner" />
-                            </SelectTrigger>
+                            <Input {...field} />
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="france">France</SelectItem>
-                            <SelectItem value="belgique">Belgique</SelectItem>
-                            <SelectItem value="suisse">Suisse</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="restaurantCity"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ville</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                <FormField
-                  control={form.control}
-                  name="restaurantStreet"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Adresse</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                </div>
-              </>
-            )}
-
-            {step === 2 && (
-              <>
-              <div className='grid grid-cols-1 gap-4'>
-              <FormField
-               control={form.control}
-               name="avatar"
-               render={() => (
-              <FormItem className="w-1/2">
-              <FormLabel>Avatar de l'utilisateur</FormLabel>
-              <FormControl>
-              <Input
-               type="file"
-               accept="image/*"
-               onChange={(e) => setAvatarFile(e.target.files[0])} // Mise à jour du state
-              />
-             </FormControl>
-             <FormMessage />
-             </FormItem>
-              )}
-            />
-                
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="w-1/2">
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="email" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                <FormItem className="w-1/2">
-                  <FormLabel>Mot de passe</FormLabel>
-                  <FormControl>
-                  <div className="relative">
-                  <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  className="pr-10"
-                  {...field}
-                  />
-                  <Button
-                  type="button"
-                  variant="ghost"
-                  siz
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                 onClick={() => setShowPassword(!showPassword)}
-                  >
-                  {showPassword ? <i className="fa-regular fa-eye-slash fa-lg"></i> : <i className="fa-regular fa-eye fa-lg"></i> }
-                 </Button>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="country"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pays</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="france">France</SelectItem>
+                              <SelectItem value="belgique">Belgique</SelectItem>
+                              <SelectItem value="suisse">Suisse</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Ville</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Téléphone</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="tel" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-                <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                <FormItem className="w-1/2">
-                  <FormLabel> Confirmer le mot de passe</FormLabel>
-                  <FormControl>
-                  <div className="relative">
-                  <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  className="pr-10"
-                  {...field}
-                  />
-                  <Button
-                  type="button"
-                  variant="ghost"
-                  siz
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                  {showConfirmPassword ? <i className="fa-regular fa-eye-slash fa-lg"></i> : <i className="fa-regular fa-eye fa-lg"></i> }
-                 </Button>
-                  </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-                </div>
-              </>
-            )}
 
-            <div className="flex justify-between pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setStep(step - 1)}
-                disabled={step === 0}
-              >
-                Précédent
-              </Button>
-              <Button 
-                type="button" 
-                className="bg-[#F5A623] hover:bg-[#F5A623]/90"
-                onClick={handleNextStep}
-              >
-                {step === steps.length - 1 ? 'Valider' : 'Suivant'}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
-    
+                </>
+              )}
+
+              {step === 1 && (
+                <>
+                  <div className='grid grid-cols-2 gap-4'>
+                    <FormField
+                      control={form.control}
+                      name="restaurantName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nom du restaurant</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="logo"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Logo du restaurant</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => setLogoFile(e.target.files[0])} // Mise à jour du state
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="restaurantCountry"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pays</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="france">France</SelectItem>
+                              <SelectItem value="belgique">Belgique</SelectItem>
+                              <SelectItem value="suisse">Suisse</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="restaurantCity"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Ville</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="restaurantStreet"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Adresse</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </>
+              )}
+
+              {step === 2 && (
+                <>
+                  <div className='grid grid-cols-1 gap-4'>
+                    <FormField
+                      control={form.control}
+                      name="avatar"
+                      render={() => (
+                        <FormItem className="w-1/2">
+                          <FormLabel>Avatar de l'utilisateur</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => setAvatarFile(e.target.files[0])} // Mise à jour du state
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem className="w-1/2">
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="email" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem className="w-1/2">
+                          <FormLabel>Mot de passe</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                className="pr-10"
+                                {...field}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                siz
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                {showPassword ? <i className="fa-regular fa-eye-slash fa-lg"></i> : <i className="fa-regular fa-eye fa-lg"></i>}
+                              </Button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem className="w-1/2">
+                          <FormLabel> Confirmer le mot de passe</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                id="confirmPassword"
+                                type={showConfirmPassword ? "text" : "password"}
+                                className="pr-10"
+                                {...field}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                siz
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              >
+                                {showConfirmPassword ? <i className="fa-regular fa-eye-slash fa-lg"></i> : <i className="fa-regular fa-eye fa-lg"></i>}
+                              </Button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="flex justify-between pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setStep(step - 1)}
+                  disabled={step === 0}
+                >
+                  Précédent
+                </Button>
+                <Button
+                  type="button"
+                  className="bg-[#F5A623] hover:bg-[#F5A623]/90"
+                  onClick={handleNextStep}
+                >
+                  {step === steps.length - 1 ? 'Valider' : 'Suivant'}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+
     </>
-   
+
   )
 }
 

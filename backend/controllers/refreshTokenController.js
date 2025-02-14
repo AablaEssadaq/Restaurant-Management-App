@@ -42,6 +42,13 @@ export const refreshAccessToken = async (req, res) => {
         { expiresIn: "15m" }
       );
 
+      //Store it in the http-only cookie
+      res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        secure: false,  // False for local development
+        sameSite: "Lax", // Because the frontend and backend are on different domains
+      });
+
       return res.status(200).json({ accessToken });
     });
   } catch (error) {

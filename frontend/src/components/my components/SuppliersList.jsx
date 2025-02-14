@@ -33,6 +33,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useDispatch, useSelector } from "react-redux"
 import { setSuppliers } from "@/store/suppliersSlice"
+import api from "@/config/api"
+import requestWithAutoRefresh from "@/config/api";
 
 const apiUrl = import.meta.env.VITE_URL_BASE
 
@@ -83,14 +85,16 @@ const SuppliersList = () => {
 
    // Move fetchSuppliers to useCallback to prevent recreation
    const fetchSuppliers = useCallback(async () => {
-    try {
-      const response = await axios.post(`${apiUrl}/api/suppliers/list`, { owner_id: user._id })
-      setSuppliersData(response.data.suppliers)
-      dispatch(setSuppliers({ suppliers:response.data.suppliers }));
-    } catch (error) {
-      console.error("Erreur de récupération des fournisseurs:", error)
-    }
-  }, [user._id,dispatch])
+    api.post("/api/suppliers/list",{ owner_id: user._id })
+   .then((response) => {
+    setSuppliersData(response.data.suppliers);
+    dispatch(setSuppliers({ suppliers: response.data.suppliers }));
+   })
+    .catch((error)=>{
+      console.error("Erreur de récupération des fournisseurs:", error);
+    })
+    
+  }, [user._id, dispatch]); // Dependencies for useCallback
 
   useEffect(() => {
     if (user._id) {
@@ -209,11 +213,11 @@ const SuppliersList = () => {
   const onSubmit = async (values) => {
     console.log("Form sent:", { ...values, owner_id: user._id })
 
-    try {
-      const response = await axios.post(`${apiUrl}/api/suppliers/list/add`, {
-        ...values,
-        owner_id: user._id, // ✅ Ajout correct de l'owner
-      })
+    api.post("/api/suppliers/list/add", {
+      ...values,
+      owner_id: user._id, // ✅ Ajout correct de l'owner
+    })
+    .then(response => {
       console.log("Fournisseur ajouté avec succès:", response.data)
       toast({
         title: "Succès",
@@ -221,24 +225,28 @@ const SuppliersList = () => {
         className: "border-green-500 bg-green-100 text-green-900",
       })
       form.reset()
-    } catch (error) {
+      fetchSuppliers();
+    })
+    .catch((error)=> {
       console.error("Erreur lors de l'envoi:", error.response?.data || error.message)
       toast({
         variant: "destructive",
         title: "Erreur",
         description: error.response?.data?.message || "Une erreur s'est produite.",
       })
-    }
+    });
+
   }
 
   const handleEditSubmit = async (e) => {
     e.preventDefault() // Prevent default form submission
     console.log("Edit form submitted:", editFormData)
-    try {
-      const response = await axios.put(`${apiUrl}/api/suppliers/list/update/${selectedItem._id}`, {
-        ...editFormData,
-        owner_id: user._id,
-      })
+
+    api.put(`/api/suppliers/list/update/${selectedItem._id}`, {
+      ...editFormData,
+      owner_id: user._id,
+    })
+    .then(response => {
       console.log("Fournisseur modifié avec succès:", response.data)
       toast({
         title: "Succès",
@@ -247,22 +255,24 @@ const SuppliersList = () => {
       })
       // Update the suppliers list or refetch data here
       fetchSuppliers() //Refetch data after edit
-    } catch (error) {
+    })
+    .catch((error)=> {
       console.error("Erreur lors de la modification:", error.response?.data || error.message)
       toast({
         variant: "destructive",
         title: "Erreur",
         description: error.response?.data?.message || "Une erreur s'est produite.",
       })
-    }
+    });
+
   }
 
   const handleDelete = async (supplier) => {
-    try {
-      await axios.delete(`${apiUrl}/api/suppliers/list/delete/${supplier._id}`)
-      
-      // Update local state immediately
-      setSuppliersData(currentSuppliers => 
+
+    api.delete(`/api/suppliers/list/delete/${supplier._id}`)
+    .then(response => {
+       // Update local state immediately
+       setSuppliersData(currentSuppliers => 
         currentSuppliers.filter(s => s._id !== supplier._id)
       )
       
@@ -278,7 +288,8 @@ const SuppliersList = () => {
         description: "Fournisseur supprimé.",
         className: "border-green-500 bg-green-100 text-green-900",
       })
-    } catch (error) {
+    })
+    .catch((error)=> {
       console.error("Erreur lors de la suppression:", error.response?.data || error.message)
       toast({
         variant: "destructive",
@@ -287,7 +298,7 @@ const SuppliersList = () => {
       })
       // Refresh the list in case of error to ensure consistency
       fetchSuppliers()
-    }
+    });
   }
 
   return (

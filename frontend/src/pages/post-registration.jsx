@@ -14,9 +14,9 @@ export function PostRegistrationPage()  {
           };
         }, []);
 
-        const toLogin = () => {
-         navigate('/login');
-        }
+  const toLogin = () => {
+      navigate('/login');
+  }
 
     return (
         <>

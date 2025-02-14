@@ -16,8 +16,13 @@ const app = express()
 const port = process.env.PORT || 8081;
 
 app.use(express.json())
-app.use(cors())
 app.use(cookieParser());
+app.use(cors({
+  origin: "http://localhost:5173", // ✅ Allow only your frontend
+  credentials: true,               // ✅ Allow cookies
+  methods: ["GET", "POST", "PUT", "DELETE"], // ✅ Allow necessary methods
+  allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allow necessary headers
+}));
 app.use('/api',[registerRouter,refreshTokenRouter])
 app.use('/api/auth',authRouter)
 app.use('/api/suppliers',[suppliersRouter,ordersRouter])

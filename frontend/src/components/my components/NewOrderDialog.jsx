@@ -30,6 +30,7 @@ import { z } from 'zod'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
 import { toast } from '@/hooks/use-toast'
+import api from '@/config/api'
 
 const apiUrl = import.meta.env.VITE_URL_BASE
 
@@ -118,16 +119,28 @@ const NewOrderDialog = ({ uniqueSuppliers, fetchOrders }) => {
       }
 
       console.log(formattedData)
-      const response = await axios.post(`${apiUrl}/api/suppliers/orders/add`,formattedData )
-      console.log(response.data)
-      toast({
-        title: "Succès",
-        description: "Commande ajoutée.",
-        className: "border-green-500 bg-green-100 text-green-900",
-      })
-      setOpen(false)
-      form.reset()
-      fetchOrders()
+
+      api.post("/api/suppliers/orders/add", formattedData )
+          .then(response => {
+            console.log(response.data)
+            toast({
+              title: "Succès",
+              description: "Commande ajoutée.",
+              className: "border-green-500 bg-green-100 text-green-900",
+            })
+            setOpen(false)
+            form.reset()
+            fetchOrders()
+          })
+          .catch((error)=> {
+          console.error("Error submitting form:", error)
+          toast({
+            variant: "destructive",
+            title: "Erreur",
+            description: `${error ||
+            "Une erreur s'est produite."}`,
+          })
+          });
     } catch (error) {
       console.error("Error submitting form:", error)
     }

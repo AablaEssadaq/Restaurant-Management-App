@@ -30,6 +30,7 @@ import { z } from 'zod'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
 import { toast } from '@/hooks/use-toast'
+import api from '@/config/api'
 
 const apiUrl = import.meta.env.VITE_URL_BASE
 
@@ -92,30 +93,29 @@ const OrderEditDialog = ({ uniqueSuppliers, order, fetchOrders }) => {
   })
 
   const onSubmit = async (data) => {
-    try {
-      const response = await axios.put(`${apiUrl}/api/suppliers/orders/update/${order._id}`, {
+      api.put(`/api/suppliers/orders/update/${order._id}`, {
         ...data,
         owner_id: user._id
       })
-      
-      if (response.status === 200) {
+      .then(response => {
+        if (response.status === 200) {
+          toast({
+            title: "Commande modifiée",
+            description: "La commande a été modifiée avec succès",
+            className: "border-green-500 bg-green-100 text-green-900",
+          })
+          fetchOrders();
+          setOpen(false)
+        }
+      })
+      .catch((error)=> {
+        console.error("Error submitting form:", error)
         toast({
-          title: "Commande modifiée",
-          description: "La commande a été modifiée avec succès",
-          className: "border-green-500 bg-green-100 text-green-900",
-        })
-        fetchOrders();
-        setOpen(false)
-
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error)
-      toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la modification de la commande",
         variant: "destructive",
       })
-    }
+      });
   }
 
   const handleSupplierChange = (supplierId) => {

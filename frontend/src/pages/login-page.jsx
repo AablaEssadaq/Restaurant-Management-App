@@ -15,6 +15,7 @@ import { useUser } from '@/context/UserContext';
 import { useRestaurant } from '@/context/RestaurantContext';
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/store/authSlice';
+import api from '@/config/api';
 
 
 
@@ -62,24 +63,20 @@ const LoginPage = () => {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
         console.log('Form submitted successfully:', values);
-
-        try {
-          const response = await axios.post(`${apiUrl}/api/auth/login`, values);
-          // Handle successful response
-          if (response.data.accessToken) {
-           const userData = response.data.authUser; 
-           const restauData = response.data.restaurant;
-           //setUser(userData); // Update the user in context
-           console.log(userData)
-           dispatch(setUser({ user: userData, restaurant: restauData }));
-           //setRestaurant(restauData); 
-           // Navigate to the dashboard page 
-           navigate('/');
-         }
-          
-        } catch (error) {
-          
-          console.error('Error submitting form:', error.response?.data || error.message);
+        api.post("/api/auth/login", values)
+          .then(response => {
+              const userData = response.data.authUser; 
+              const restauData = response.data.restaurant;
+              //setUser(userData); // Update the user in context
+              console.log(userData)
+              dispatch(setUser({ user: userData, restaurant: restauData }));
+              //setRestaurant(restauData); 
+              // Navigate to the dashboard page 
+              navigate('/');
+            
+          })
+          .catch((error)=> {
+            console.error('Error submitting form:', error.response?.data || error.message);
           
           toast({
             variant: "destructive",
@@ -87,12 +84,7 @@ const LoginPage = () => {
             description: `${error.response?.data?.message ||
             "Une erreur s'est produite lors de la soumission du formulaire."}`,
           })
-
-          {/* setAlertMessage(
-            error.response?.data?.message ||
-            "Une erreur s'est produite lors de la soumission du formulaire."
-          ); */}
-        }
+          });
       }
 
 

@@ -44,11 +44,18 @@ export const authenticateUser = async(req,res) => {
             refreshTokenExpiresAt: tokenExpirationDate,
           });
 
+          res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: false,  // False for local development
+            sameSite: "Lax", // Because the frontend and backend are on different domains
+          });
+          
+
         //Store the unhashed refresh Token in the http-only cookie
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,         // Prevents access via JavaScript
-           // secure: true,           // Ensures it's sent over HTTPS
-            sameSite: "strict",     // Prevents CSRF attacks
+            secure: false,           // Switch to true in production
+            sameSite: "Lax",     
             maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
           });
 
@@ -73,8 +80,8 @@ export const logoutUser = async (req, res) => {
       // Clear the cookie
       res.clearCookie("refreshToken", {
         httpOnly: true,
-       // secure: true,
-        sameSite: "strict",
+        secure: false,
+        sameSite: "None",
       });
   
       return res.status(200).json({ message: "Logged out successfully." });

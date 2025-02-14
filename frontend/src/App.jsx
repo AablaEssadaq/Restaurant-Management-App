@@ -12,10 +12,20 @@ import { UserProvider } from './context/UserContext';
 import { RestaurantProvider } from './context/RestaurantContext';
 import SuppliersList from './components/my components/SuppliersList';
 import SuppliersOrders from './components/my components/SuppliersOrders';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import SessionExpired from './pages/session-expired';
+
 
 
 
 function App() {
+
+  const dispatch = useDispatch();
+
+  /*useEffect(() => {
+    dispatch(refreshAccessToken());  // Get new token on page refresh
+  }, [dispatch]);*/
 
   return (
     <>
@@ -25,6 +35,7 @@ function App() {
       <Route path="/register" element={<MultiStepForm />} />
       <Route path="/postRegister" element={<PostRegistrationPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/session-expired" element={<SessionExpired />} />
       <Route path="/" element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
