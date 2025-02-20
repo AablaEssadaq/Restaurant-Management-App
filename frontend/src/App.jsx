@@ -1,53 +1,58 @@
-
-import { Routes,Route } from 'react-router-dom';
-import LoginPage from './pages/login-page';
-import MultiStepForm from './pages/multi-step-form'
-import PostRegistrationPage from './pages/post-registration'
-import './index.css'
 import '@fortawesome/fontawesome-free/css/all.css';
+import { useEffect } from 'react';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import Dashboard from './components/my components/Dashboard';
-import { Toaster } from './components/ui/toaster';
 import Layout from './components/my components/Layout';
-import { UserProvider } from './context/UserContext';
-import { RestaurantProvider } from './context/RestaurantContext';
 import SuppliersList from './components/my components/SuppliersList';
 import SuppliersOrders from './components/my components/SuppliersOrders';
-import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
+import { Toaster } from './components/ui/toaster';
+import { setNavigationCallback } from './config/api';
+import { RestaurantProvider } from './context/RestaurantContext';
+import { UserProvider } from './context/UserContext';
+import './index.css';
+import LoginPage from './pages/login-page';
+import MultiStepForm from './pages/multi-step-form';
+import PostRegistrationPage from './pages/post-registration';
 import SessionExpired from './pages/session-expired';
-
-
-
+import Unauthorized from './pages/unauthorized';
+import PrivateRoute from './components/my components/PrivateRoute';
 
 function App() {
-
-  const dispatch = useDispatch();
-
-  /*useEffect(() => {
-    dispatch(refreshAccessToken());  // Get new token on page refresh
-  }, [dispatch]);*/
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    setNavigationCallback(navigate);
+  }, [navigate]);
 
   return (
     <>
-    <UserProvider>
-    <RestaurantProvider>
-    <Routes>
-      <Route path="/register" element={<MultiStepForm />} />
-      <Route path="/postRegister" element={<PostRegistrationPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/session-expired" element={<SessionExpired />} />
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/suppliers/list" element={<SuppliersList />} />
-        <Route path="/suppliers/orders" element={<SuppliersOrders />} />
-      </Route>
-    </Routes>
-    <Toaster />
-    </RestaurantProvider>
-    </UserProvider>
+      <UserProvider>
+        <RestaurantProvider>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/register" element={<MultiStepForm />} />
+            <Route path="/postRegister" element={<PostRegistrationPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/session-expired" element={<SessionExpired />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+            
+            {/* Protected routes */}
+            <Route path="/" element={
+              <PrivateRoute>
+                <Layout />
+              </PrivateRoute>
+            }>
+              <Route index element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/suppliers/list" element={<SuppliersList />} />
+              <Route path="/suppliers/orders" element={<SuppliersOrders />} />
+            </Route>
+          </Routes>
+          <Toaster />
+        </RestaurantProvider>
+      </UserProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

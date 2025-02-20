@@ -69,19 +69,40 @@ export const authenticateUser = async(req,res) => {
 
 export const logoutUser = async (req, res) => {
     try {
-      // Clear the refresh token from the database
-      console.log(req.email)
 
-      await User.findOneAndUpdate( {email :req.email} , {
+     // Get the access token from cookies
+    const accessToken = req.cookies.accessToken;
+    
+    if (!accessToken) {
+      return res.status(400).json({ message: 'No access token provided' });
+    }
+
+    // Decode the token to get the email
+    // Note: We don't need to verify the token here since we're just logging out
+    const decoded = jwt.decode(accessToken);
+    
+    if (!decoded || !decoded.email) {
+      return res.status(400).json({ message: 'Invalid token format' });
+    }
+
+
+      await User.findOneAndUpdate( {email :decoded.email} , {
         refreshToken: null,
         refreshTokenExpiresAt: null,
       });
   
-      // Clear the cookie
+      // Clear the accessToken cookie
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "Lax",
+      });
+
+      // Clear the refreshToken cookie
       res.clearCookie("refreshToken", {
         httpOnly: true,
         secure: false,
-        sameSite: "None",
+        sameSite: "Lax",
       });
   
       return res.status(200).json({ message: "Logged out successfully." });
