@@ -16,6 +16,7 @@ import PostRegistrationPage from './pages/post-registration';
 import SessionExpired from './pages/session-expired';
 import Unauthorized from './pages/unauthorized';
 import PrivateRoute from './components/my components/PrivateRoute';
+import Logistics from './components/my components/Logistics';
 
 function App() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/suppliers/list" element={<SuppliersList />} />
               <Route path="/suppliers/orders" element={<SuppliersOrders />} />
+              <Route path="/logistics" element={<Logistics />} />
             </Route>
           </Routes>
           <Toaster />

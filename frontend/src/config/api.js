@@ -95,11 +95,14 @@ const processQueue = (error, token = null) => {
 
 const refreshAccessToken = async () => {
   try {
+    console.log("🔄 Tentative de rafraîchissement du token...");
     const response = await axios.post(`${API_URL}/api/refresh-token`, {}, {
       withCredentials: true
     });
+    console.log("✅ Token refreshed:", response.data);
     return response.data;
   } catch (error) {
+    console.error("❌ Refresh token request failed:", error.response?.data || error.message);
     if (error.response?.status === 401) {
       if (error.response.data?.message?.includes('expired')) {
         throw new AuthError('session-expired', 'Your session has expired');
@@ -116,7 +119,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
      // Skip all auth error handling if bypass flag is set
-     if (window.__bypassAuthInterceptor) {
+    if (window.__bypassAuthInterceptor) {
       return Promise.reject(error);
     }
 
@@ -125,7 +128,7 @@ api.interceptors.response.use(
      // Handle 401 errors
     if (error.response?.status === 401) {
       // Check if it's a token expiration or other auth error
-      const isTokenError = error.response.data?.message?.includes('token');
+      const isTokenError = error.response.data?.message?.includes('token') || error.response.data?.message?.includes('expired');
       
       if (!isTokenError) {
         // This is a regular unauthorized error, not a token issue
@@ -160,13 +163,18 @@ api.interceptors.response.use(
         }
       }
 
-      return new Promise((resolve, reject) => {
-        failedQueue.push({ resolve, reject });
+      // Si un refresh est déjà en cours, mettre la requête en file d'attente
+    return new Promise((resolve, reject) => {
+      failedQueue.push({ resolve, reject });
+    })
+      .then(() => {
+        return api(originalRequest);
+      })
+      .catch((err) => {
+        return Promise.reject(err);
       });
-    }
-
-    return Promise.reject(error);
   }
+}
 );
 
 export default api;
