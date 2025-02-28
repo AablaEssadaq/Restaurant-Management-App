@@ -1,14 +1,4 @@
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -19,23 +9,31 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Plus, Search } from 'lucide-react'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
+} from "@/components/ui/pagination"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import api from "@/config/api"
+import { toast } from "@/hooks/use-toast"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { format } from "date-fns"
+import fr from "date-fns/locale/fr"; // Pour un affichage en français
+import { Search } from 'lucide-react'
+import { useCallback, useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { useSelector } from "react-redux"
+import { z } from "zod"
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
-import { useCallback, useEffect, useState } from "react"
-import { useSelector } from "react-redux"
-import axios from "axios"
-import { format } from "date-fns"
-import fr from "date-fns/locale/fr" // Pour un affichage en français
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { toast } from "@/hooks/use-toast"
 import NewOrderDialog from "./NewOrderDialog"
 import OrderDetailsDialog from "./OrderDetailsDialog"
 import OrderEditDialog from "./OrderEditDialog"
-import api from "@/config/api"
 
 const formatDate = (dateString) => {
   return format(new Date(dateString), "dd-MM-yyyy", { locale: fr })
@@ -70,8 +68,6 @@ const orderSchema = z.object({
  // total: z.number().min(0, "Le total ne peut pas être négatif"),
 });
 
-
-const apiUrl = import.meta.env.VITE_URL_BASE
 
 const SuppliersOrders = () => {
 

@@ -17,6 +17,8 @@ import SessionExpired from './pages/session-expired';
 import Unauthorized from './pages/unauthorized';
 import PrivateRoute from './components/my components/PrivateRoute';
 import Logistics from './components/my components/Logistics';
+import SubCategories from './components/my components/SubCategories';
+import LogisticsItems from './components/my components/LogisticsItems';
 
 function App() {
   const navigate = useNavigate();
@@ -48,6 +50,8 @@ function App() {
               <Route path="/suppliers/list" element={<SuppliersList />} />
               <Route path="/suppliers/orders" element={<SuppliersOrders />} />
               <Route path="/logistics" element={<Logistics />} />
+              <Route path="/logistics/subcategories" element={<SubCategories/>} />
+              <Route path="/logistics/items" element={<LogisticsItems/>} />
             </Route>
           </Routes>
           <Toaster />

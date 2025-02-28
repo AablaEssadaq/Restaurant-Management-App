@@ -54,16 +54,18 @@ export const getOrders = async (req, res) => {
       const { owner_id } = req.body;
   
       const owner = await Owner.findById(owner_id)
-        .populate({
-          path: "orders",
-          populate: { path: "supplier" } // Populate supplier inside each order
-        });
-  
-      if (!owner) {
-        return res.status(404).json({ message: "Owner not found" });
-      }
-  
-      return res.status(200).json({ orders: owner.orders });
+      .populate({
+        path: "orders",
+        populate: { path: "supplier" }, // Populate supplier inside each order
+        options: { sort: { orderDate: -1, deliveryDate: 1  } } // Sort orders by orderDate in descending order
+      });
+    
+    if (!owner) {
+      return res.status(404).json({ message: "Owner not found" });
+    }
+    
+    return res.status(200).json({ orders: owner.orders });
+    
   
     } catch (error) {
       return res.status(500).json({ message: "Something went wrong.", error: error.message });
