@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent } from '../../ui/card';
 
 const SubCategories = () => {
   const location = useLocation();
@@ -8,7 +8,7 @@ const SubCategories = () => {
   const navigate = useNavigate();
 
   function handleClick(name){
-    navigate('/logistics/items', { state: { subcategoryName: name } })
+    navigate('/logistics/equipements', { state: { category: selectedCategory, subcategoryName: name } })
   }
   
   if (!selectedCategory) {

@@ -1,7 +1,7 @@
 import api from '@/config/api';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent } from '../../ui/card';
 
 const Logistics = () => {
   const [categories, setCategories] = useState([]);

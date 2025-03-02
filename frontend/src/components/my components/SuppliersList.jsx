@@ -1,3 +1,14 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Label } from "@/components/ui/label"
@@ -11,32 +22,18 @@ import {
 } from "@/components/ui/pagination"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import api from "@/config/api"
 import { toast } from "@/hooks/use-toast"
+import { setSuppliers } from "@/store/suppliersSlice"
 import { zodResolver } from "@hookform/resolvers/zod"
-import axios from "axios"
 import { Plus, Search } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import { useDispatch, useSelector } from "react-redux"
 import { z } from "zod"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { useDispatch, useSelector } from "react-redux"
-import { setSuppliers } from "@/store/suppliersSlice"
-import api from "@/config/api"
-import requestWithAutoRefresh from "@/config/api";
 
-const apiUrl = import.meta.env.VITE_URL_BASE
 
 // ✅ Define Zod schema for validation
 const supplierSchema = z.object({

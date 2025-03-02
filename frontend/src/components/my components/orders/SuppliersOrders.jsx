@@ -28,9 +28,9 @@ import { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useSelector } from "react-redux"
 import { z } from "zod"
-import { Badge } from '../ui/badge'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
+import { Badge } from '../../ui/badge'
+import { Button } from '../../ui/button'
+import { Input } from '../../ui/input'
 import NewOrderDialog from "./NewOrderDialog"
 import OrderDetailsDialog from "./OrderDetailsDialog"
 import OrderEditDialog from "./OrderEditDialog"

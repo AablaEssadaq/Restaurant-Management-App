@@ -4,7 +4,7 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import Dashboard from './components/my components/Dashboard';
 import Layout from './components/my components/Layout';
 import SuppliersList from './components/my components/SuppliersList';
-import SuppliersOrders from './components/my components/SuppliersOrders';
+import SuppliersOrders from './components/my components/orders/SuppliersOrders';
 import { Toaster } from './components/ui/toaster';
 import { setNavigationCallback } from './config/api';
 import { RestaurantProvider } from './context/RestaurantContext';
@@ -16,9 +16,9 @@ import PostRegistrationPage from './pages/post-registration';
 import SessionExpired from './pages/session-expired';
 import Unauthorized from './pages/unauthorized';
 import PrivateRoute from './components/my components/PrivateRoute';
-import Logistics from './components/my components/Logistics';
-import SubCategories from './components/my components/SubCategories';
-import LogisticsItems from './components/my components/LogisticsItems';
+import Logistics from './components/my components/logistics/Logistics';
+import SubCategories from './components/my components/logistics/SubCategories';
+import LogisticsItems from './components/my components/logistics/LogisticsItems';
 
 function App() {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ function App() {
               <Route path="/suppliers/orders" element={<SuppliersOrders />} />
               <Route path="/logistics" element={<Logistics />} />
               <Route path="/logistics/subcategories" element={<SubCategories/>} />
-              <Route path="/logistics/items" element={<LogisticsItems/>} />
+              <Route path="/logistics/equipements" element={<LogisticsItems/>} />
             </Route>
           </Routes>
           <Toaster />

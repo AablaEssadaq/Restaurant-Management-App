@@ -1,13 +1,12 @@
-import React from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
+  BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
+import React from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const Breadcrumbs = () => {
   const location = useLocation()
