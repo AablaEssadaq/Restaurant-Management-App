@@ -1,27 +1,4 @@
 import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious
-} from "@/components/ui/pagination";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import api from '@/config/api';
-import { Plus, Search } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Button } from '../../ui/button';
-import { Input } from '../../ui/input';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Label } from "@/components/ui/label"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { useSelector } from "react-redux";
-import { toast } from "@/hooks/use-toast";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -31,7 +8,29 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
+} from "@/components/ui/pagination";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import api from '@/config/api';
+import { toast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus, Search } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
+import { useLocation } from 'react-router-dom';
+import { z } from "zod";
+import { Button } from '../../ui/button';
+import { Input } from '../../ui/input';
 import ItemsEditDialog from "./ItemsEditDialog";
 
 const LogisticsItems = () => {
@@ -209,12 +208,12 @@ const LogisticsItems = () => {
   }, [searchQuery])
 
 
-        // Calculate pagination with filtered results
-        const totalItems = filteredItems.length
-        const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage))
-        const indexOfLastItem = currentPage * itemsPerPage
-        const indexOfFirstItem = indexOfLastItem - itemsPerPage
-        const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem)
+      // Calculate pagination with filtered results
+      const totalItems = filteredItems.length
+      const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage))
+      const indexOfLastItem = currentPage * itemsPerPage
+      const indexOfFirstItem = indexOfLastItem - itemsPerPage
+      const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem)
 
       // Ensure current page is within valid range
       useEffect(() => {

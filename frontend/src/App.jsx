@@ -19,6 +19,7 @@ import PrivateRoute from './components/my components/PrivateRoute';
 import Logistics from './components/my components/logistics/Logistics';
 import SubCategories from './components/my components/logistics/SubCategories';
 import LogisticsItems from './components/my components/logistics/LogisticsItems';
+import Managers from './components/my components/Managers';
 
 function App() {
   const navigate = useNavigate();
@@ -52,6 +53,7 @@ function App() {
               <Route path="/logistics" element={<Logistics />} />
               <Route path="/logistics/subcategories" element={<SubCategories/>} />
               <Route path="/logistics/equipements" element={<LogisticsItems/>} />
+              <Route path="/managers" element={<Managers/>} />
             </Route>
           </Routes>
           <Toaster />

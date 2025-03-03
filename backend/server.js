@@ -11,6 +11,7 @@ import refreshTokenRouter from './routes/refreshToken.js';
 import { suppliersRouter } from './routes/suppliers.js';
 import { ordersRouter } from './routes/orders.js';
 import { logisticsRouter } from './routes/logistics.js';
+import { managersRouter } from './routes/managers.js';
 dotenv.config();
 
 const app = express()
@@ -24,7 +25,7 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE"], // ✅ Allow necessary methods
   allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allow necessary headers
 }));
-app.use('/api',[registerRouter,refreshTokenRouter])
+app.use('/api',[registerRouter,refreshTokenRouter,managersRouter])
 app.use('/api/auth',authRouter)
 app.use('/api/suppliers',[suppliersRouter,ordersRouter])
 app.use('/api/logistics',logisticsRouter)
