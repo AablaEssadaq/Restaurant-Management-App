@@ -70,7 +70,18 @@ export const editSupplier = async(req,res) => {
       return res.status(404).json({ message: "Supplier not found" });
     }
 
-    const editedSupplier = await Supplier.findByIdAndUpdate(id, { lastName, firstName, phoneNumber, country, city, street,email,category,paymentMethod,rib },{ new: true })
+    const editedSupplier = await Supplier.findByIdAndUpdate(id,
+       { lastName,
+         firstName,
+         phoneNumber,
+         'address.country':country,
+         'address.city':city,
+         'address.street':street,
+         email,
+         category,
+         paymentMethod,
+         rib },
+        { new: true })
     return res.status(200).json({ message: "Supplier updated successfully !" , supplier: editedSupplier});
   } 
   

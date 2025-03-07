@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import Owner from "../database/models/Owner.js";
 import Restaurant from "../database/models/Restaurant.js";
+import cloudinary from "../config/cloudinary.js";
 
 dotenv.config()
 
@@ -110,6 +111,95 @@ export const logoutUser = async (req, res) => {
     } catch (error) {
       return res.status(500).json({ message: "Failed to log out.", error : error.message });
     }
-  };
-  
+};
 
+export const editOwner = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { lastName, firstName, phoneNumber, email, country, city } = req.body;
+    
+    console.log(id, lastName, firstName);
+
+    const owner = await Owner.findById(id)
+
+    const existingUser = await User.findById(owner.user_id)
+    
+    // Récupération des fichiers avatar et logo (Multer)
+    const avatarFile = req.files?.avatar?.[0]?.path || null;
+    
+    // Upload des fichiers sur Cloudinary
+    const avatarUpload = avatarFile
+      ? await cloudinary.uploader.upload(avatarFile, { folder: "avatars" })
+      : null;
+    
+    // Modification du compte du propriétaire
+    const newUser = await User.findOneAndUpdate(
+      { _id: owner.user_id }, // Filter object
+      { 
+        email,
+        avatar: avatarUpload?.secure_url || existingUser.avatar, // Keep existing avatar if no new upload
+      },
+      { new: true }
+    );
+    
+    // Modification du propriétaire
+    const newOwner = await Owner.findByIdAndUpdate(
+      id,
+      { lastName, firstName, phoneNumber, email, 'address.country':country, 'address.city':city },
+      { new: true }
+    );
+    
+    return res.status(200).json({ 
+      message: "Profile updated successfully!", 
+      user: newUser, 
+      owner: newOwner 
+    });
+    
+  } catch (error) {
+    return res.status(500).json({ 
+      message: "Failed to update profile.", 
+      error: error.message 
+    });
+  }
+}
+  
+export const editRestaurant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { restaurantName, restaurantCountry, restaurantCity, restaurantStreet } = req.body;
+
+    const oldRestaurant = await Restaurant.findById(id);
+
+    // Récupération du fichier logo (Multer)
+    const logoFile = req.files?.logo?.[0]?.path || null;
+    
+    // Upload du fichier sur Cloudinary
+    const logoUpload = logoFile
+      ? await cloudinary.uploader.upload(logoFile, { folder: "restaurant_logos" })
+      : null;
+    
+    // Modification du restaurant
+    const newRestaurant = await Restaurant.findOneAndUpdate(
+      { _id: id}, // Filter object
+      { 
+        name: restaurantName,
+        'address.country': restaurantCountry,
+        'address.city': restaurantCity,
+        'address.street': restaurantStreet,
+        logo: logoUpload?.secure_url || oldRestaurant.logo, // Keep existing logo if no new upload
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({ 
+      message: "Restaurant updated successfully!", 
+      restaurant: newRestaurant
+    });
+
+  } catch (error) {
+    return res.status(500).json({ 
+      message: "Failed to update restaurant.", 
+      error: error.message 
+    });
+  }
+};

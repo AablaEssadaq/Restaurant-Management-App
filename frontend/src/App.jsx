@@ -1,5 +1,5 @@
 import '@fortawesome/fontawesome-free/css/all.css';
-import { useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import Dashboard from './components/my components/Dashboard';
 import Layout from './components/my components/Layout';
@@ -20,18 +20,43 @@ import Logistics from './components/my components/logistics/Logistics';
 import SubCategories from './components/my components/logistics/SubCategories';
 import LogisticsItems from './components/my components/logistics/LogisticsItems';
 import Managers from './components/my components/Managers';
+import OwnerProfile from './components/my components/OwnerProfile';
+import GlobalLoader from './components/my components/GlobalLoader';
+import Settings from './components/my components/Settings';
 
 function App() {
+
+  const [isAppReady, setIsAppReady] = useState(false);
   const navigate = useNavigate();
   
   useEffect(() => {
     setNavigationCallback(navigate);
+
+    // Simulate app initialization
+    const initializeApp = async () => {
+      try {
+        // You can add any initial setup logic here
+        // For example, checking authentication, loading initial data, etc.
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated delay
+        setIsAppReady(true);
+      } catch (error) {
+        console.error('App initialization error:', error);
+        setIsAppReady(true); // Ensure the app still loads even if there's an error
+      }
+    };
+
+    initializeApp();
   }, [navigate]);
+
+  if (!isAppReady) {
+    return <GlobalLoader />;
+  }
 
   return (
     <>
       <UserProvider>
         <RestaurantProvider>
+        <Suspense fallback={<GlobalLoader />}>
           <Routes>
             {/* Public routes */}
             <Route path="/register" element={<MultiStepForm />} />
@@ -54,9 +79,12 @@ function App() {
               <Route path="/logistics/subcategories" element={<SubCategories/>} />
               <Route path="/logistics/equipements" element={<LogisticsItems/>} />
               <Route path="/managers" element={<Managers/>} />
+              <Route path="/owner/profile" element={<OwnerProfile/>} />
+              <Route path="/settings" element={<Settings/>} />
             </Route>
           </Routes>
           <Toaster />
+          </Suspense>
         </RestaurantProvider>
       </UserProvider>
     </>

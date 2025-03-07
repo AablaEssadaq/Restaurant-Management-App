@@ -6,10 +6,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User, LogOut } from 'lucide-react';
-import api, { handleLogout } from "@/config/api";
-import { store } from "@/store";
-import { logout } from "@/store/authSlice";
+import { handleLogout } from "@/config/api";
+import { LogOut, User } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 
@@ -21,7 +19,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
-    //navigate('/profile');
+    navigate('/owner/profile');
   };
 
  /* const handleLogout = async () => {

@@ -1,7 +1,9 @@
 import express from 'express'
-import  { authenticateUser, logoutUser } from '../controllers/authController.js';
+import  { authenticateUser, editOwner, editRestaurant, logoutUser } from '../controllers/authController.js';
 import validateUser from '../middlewares/validateUser.js';
 import verifyToken from '../middlewares/verifyToken.js';
+import multer from "../config/multer.js";
+
 
 export const authRouter = express.Router()
 
@@ -60,5 +62,11 @@ authRouter.post('/login', validateUser, authenticateUser)
  *         description: Failed to log out.
  */
 authRouter.post('/logout', verifyToken, logoutUser)
+authRouter.post('/owner/update/:id', multer.fields([
+    { name: "avatar", maxCount: 1 },
+  ]), verifyToken, editOwner)
+  authRouter.post('/restaurant/update/:id', multer.fields([
+    { name: "logo", maxCount: 1 },
+  ]), verifyToken, editRestaurant)
 
 export default authRouter;

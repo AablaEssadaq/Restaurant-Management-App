@@ -61,7 +61,7 @@ const Managers = () => {
       // Personal Information
       lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
       firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
-      phoneNumber: z.string().min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
+      phoneNumber: z.string().regex(/^0[567][0-9]{8}$/, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
       // Credentials
       email: z.string().email("Veuillez entrer une adresse email valide"),
       password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
@@ -129,6 +129,7 @@ const Managers = () => {
       className: "border-green-500 bg-green-100 text-green-900",
     });
     fetchManagers(); // Rafraîchir la liste
+    setOpen(false); // Close modal after submission
     })
     .catch((error)=> {
       console.error("Erreur lors de la modification:", error.response?.data || error.message)

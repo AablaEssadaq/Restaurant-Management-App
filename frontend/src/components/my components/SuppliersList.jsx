@@ -67,6 +67,8 @@ const SuppliersList = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(5)
   const [searchQuery, setSearchQuery] = useState("")
+  const [open, setOpen] = useState(false)
+
 
   const dispatch = useDispatch();
 
@@ -76,9 +78,22 @@ const SuppliersList = () => {
   }
 
   const handleEditInputChange = (event) => {
-    const { name, value } = event.target
-    setEditFormData((prevData) => ({ ...prevData, [name]: value }))
-  }
+    const { name, value } = event.target;
+    
+    // Si le champ est country ou city, mettre à jour l'objet address imbriqué
+    if (name === "country" || name === "city" || name === "street") {
+      setEditFormData((prevData) => ({
+        ...prevData,
+        address: {
+          ...prevData.address,
+          [name]: value
+        }
+      }));
+    } else {
+      // Pour les autres champs, mise à jour normale
+      setEditFormData((prevData) => ({ ...prevData, [name]: value }));
+    }
+  };
 
    // Move fetchSuppliers to useCallback to prevent recreation
    const fetchSuppliers = useCallback(async () => {
@@ -237,10 +252,25 @@ const SuppliersList = () => {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault() // Prevent default form submission
-    console.log("Edit form submitted:", editFormData)
+
+    // Création de l'objet de données formaté
+    const formattedData = {
+      firstName: editFormData.firstName,
+      lastName: editFormData.lastName,
+      phoneNumber: editFormData.phoneNumber,
+      email: editFormData.email,
+      country: editFormData.address?.country,
+      city: editFormData.address?.city,
+      street: editFormData.address?.street,
+      category: editFormData.category,
+      paymentMethod: editFormData.paymentMethod,
+      rib: editFormData.rib,
+    };
+
+    console.log("Edit form submitted:", formattedData)
 
     api.put(`/api/suppliers/list/update/${selectedItem._id}`, {
-      ...editFormData,
+      ...formattedData,
       owner_id: user._id,
     })
     .then(response => {
@@ -252,6 +282,8 @@ const SuppliersList = () => {
       })
       // Update the suppliers list or refetch data here
       fetchSuppliers() //Refetch data after edit
+      setOpen(false); // Close modal after submission
+      form.reset()
     })
     .catch((error)=> {
       console.error("Erreur lors de la modification:", error.response?.data || error.message)
@@ -609,7 +641,7 @@ const SuppliersList = () => {
                         )}
                       </DialogContent>
                     </Dialog>
-                    <Dialog>
+                    <Dialog open={open} onOpenChange={setOpen}>
                       <DialogTrigger asChild>
                         <Button
                           className="bg-orange hover:bg-orange-hover"
